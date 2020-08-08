@@ -1,6 +1,7 @@
 """
 Resource locations for running out of Debian package installs
 """
+from __future__ import unicode_literals
 
 UI_FILE = '/usr/share/gtimelog/gtimelog.ui'
 PREFERENCES_UI_FILE = '/usr/share/gtimelog/preferences.ui'

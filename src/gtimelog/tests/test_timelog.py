@@ -1,5 +1,8 @@
 """Tests for gtimelog.timelog"""
+from __future__ import unicode_literals
 
+from future import standard_library
+standard_library.install_aliases()
 import codecs
 import datetime
 import doctest
@@ -11,10 +14,7 @@ import textwrap
 import time
 import unittest
 import sys
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
+from io import StringIO
 
 import freezegun
 try:

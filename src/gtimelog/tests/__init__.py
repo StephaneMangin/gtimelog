@@ -1,4 +1,5 @@
 """Tests for gtimelog"""
+from __future__ import unicode_literals
 import unittest
 
 from gtimelog.tests import test_timelog, test_settings, test_main

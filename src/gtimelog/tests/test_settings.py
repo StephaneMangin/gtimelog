@@ -1,4 +1,5 @@
 """Tests for gtimelog.settings"""
+from __future__ import unicode_literals
 
 import os
 import shutil

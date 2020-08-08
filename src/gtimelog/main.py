@@ -1,12 +1,12 @@
 """An application for keeping track of your time."""
-from __future__ import print_function, absolute_import
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import time
 import sys
 
-
 DEBUG = '--debug' in sys.argv
-
 
 if DEBUG:
     def mark_time(what=None, _prev=[0, 0]):
@@ -20,7 +20,6 @@ if DEBUG:
 else:
     def mark_time(what=None):
         pass
-
 
 mark_time()
 mark_time("in script")
@@ -46,10 +45,8 @@ from io import StringIO
 
 mark_time("Python imports done")
 
-
 if DEBUG:
     os.environ['G_ENABLE_DIAGNOSTIC'] = '1'
-
 
 # The gtimelog.paths import has important side effects and must be done before
 # importing 'gi'.
@@ -81,6 +78,7 @@ require_version('Gtk', '3.0')
 require_version('Soup', '2.4')
 require_version('Secret', '1')
 from gi.repository import Gtk, Gdk, GLib, Gio, GObject, Pango, Soup, Secret
+
 mark_time("Gtk imports done")
 
 from gtimelog import __version__
@@ -90,25 +88,23 @@ from gtimelog.timelog import (
     Reports, ReportRecord, TaskList, TimeLog)
 
 
-if str is bytes:
-    # Python 2: GTK+ gives us back UTF-8 strings
-    def to_unicode(s):
+# Python 2: GTK+ gives us back UTF-8 strings
+# Python 3: GTK+ gives us Unicode strings
+def to_unicode(s):
+    if str is bytes:
         return s.decode('UTF-8')
-    def to_bytes(s):
+    return s
+
+
+def to_bytes(s):
+    if str is bytes:
         return s
-else:
-    # Python 3: GTK+ gives us Unicode strings
-    def to_unicode(s):
-        return s
-    def to_bytes(s):
-        return s.encode('UTF-8')
+    return s.encode('UTF-8')
 
 
 mark_time("gtimelog imports done")
 
-
 log = logging.getLogger('gtimelog')
-
 
 MailProtocol = collections.namedtuple('MailProtocol', 'factory, startssl')
 
@@ -335,12 +331,12 @@ class Authenticator(object):
         mountoperation.connect('reply', on_reply)
         mountoperation.set_password_save(Gio.PasswordSave.PERMANENTLY)
         mountoperation.do_ask_password(mountoperation,
-            _('Authentication is required for "%s"\n'
-              'You need a username and a password to access %s') % (
-                  auth.get_realm(), uri.get_host()),
-            '',
-            auth.get_realm(),
-            flags)
+                                       _('Authentication is required for "%s"\n'
+                                         'You need a username and a password to access %s') % (
+                                           auth.get_realm(), uri.get_host()),
+                                       '',
+                                       auth.get_realm(),
+                                       flags)
 
     def find_password(self, auth, uri, retrying, callback):
         def keyring_callback(username, password):
@@ -370,8 +366,8 @@ class Authenticator(object):
             self.lookup_in_progress = True
             uri = message.get_uri()
             self.find_password(auth, uri, retrying,
-                callback=functools.partial(
-                    self.http_auth_finish, session, message, auth))
+                               callback=functools.partial(
+                                   self.http_auth_finish, session, message, auth))
 
     def http_auth_finish(self, session, message, auth, username, password):
         if username and password:
@@ -388,7 +384,6 @@ soup_session.connect('authenticate', authenticator.http_auth_cb)
 
 
 class Application(Gtk.Application):
-
     class Actions(object):
 
         actions = [
@@ -427,7 +422,8 @@ class Application(Gtk.Application):
     def check_schema(self):
         schema_source = Gio.SettingsSchemaSource.get_default()
         if schema_source.lookup("org.gtimelog", False) is None:
-            sys.exit(_("\nWARNING: GSettings schema for org.gtimelog is missing!  If you're running from a source checkout, be sure to run 'make'."))
+            sys.exit(_(
+                "\nWARNING: GSettings schema for org.gtimelog is missing!  If you're running from a source checkout, be sure to run 'make'."))
 
     def create_data_directory(self):
         data_dir = Settings().get_data_dir()
@@ -435,7 +431,8 @@ class Application(Gtk.Application):
             try:
                 os.makedirs(data_dir)
             except OSError as e:
-                log.error(_("Could not create {directory}: {error}").format(directory=data_dir, error=e), file=sys.stderr)
+                log.error(_("Could not create {directory}: {error}").format(directory=data_dir, error=e),
+                          file=sys.stderr)
             else:
                 log.info(_("Created {directory}").format(directory=data_dir))
 
@@ -648,7 +645,6 @@ REPORT_KINDS = {
 
 
 class Window(Gtk.ApplicationWindow):
-
     timelog = GObject.Property(
         type=object, default=None, nick='Time log',
         blurb='Time log object')
@@ -696,7 +692,8 @@ class Window(Gtk.ApplicationWindow):
             self.show_search_bar = PropertyAction.new("show-search-bar", win.search_bar, "search-mode-enabled")
             win.add_action(self.show_search_bar)
 
-            for action_name in ['go-back', 'go-forward', 'go-home', 'add-entry', 'report', 'send-report', 'cancel-report']:
+            for action_name in ['go-back', 'go-forward', 'go-home', 'add-entry', 'report', 'send-report',
+                                'cancel-report']:
                 action = Gio.SimpleAction.new(action_name, None)
                 action.connect('activate', getattr(win, 'on_' + action_name.replace('-', '_')))
                 win.add_action(action)
@@ -762,9 +759,9 @@ class Window(Gtk.ApplicationWindow):
         self.time_label = builder.get_object('time_label')
         self.task_entry = TaskEntry()
         swap_widget(builder, 'task_entry', self.task_entry)
-        self.task_entry.grab_focus() # I specified this in the .ui file but it gets ignored
+        self.task_entry.grab_focus()  # I specified this in the .ui file but it gets ignored
         self.add_button = builder.get_object('add_button')
-        self.add_button.grab_default() # I specified this in the .ui file but it gets ignored
+        self.add_button.grab_default()  # I specified this in the .ui file but it gets ignored
         self.log_view = LogView()
         swap_widget(builder, 'log_view', self.log_view)
         self.bind_property('timelog', self.task_entry, 'timelog', GObject.BindingFlags.DEFAULT)
@@ -836,7 +833,8 @@ class Window(Gtk.ApplicationWindow):
         self.gsettings.bind('sender', self.sender_entry, 'text', Gio.SettingsBindFlags.DEFAULT)
         self.gsettings.bind('list-email', self.recipient_entry, 'text', Gio.SettingsBindFlags.DEFAULT)
         self.gsettings.bind('report-style', self.report_view, 'report-style', Gio.SettingsBindFlags.DEFAULT)
-        self.gsettings.bind('remote-task-list', self.app.actions.refresh_tasks, 'enabled', Gio.SettingsBindFlags.DEFAULT)
+        self.gsettings.bind('remote-task-list', self.app.actions.refresh_tasks, 'enabled',
+                            Gio.SettingsBindFlags.DEFAULT)
         self.gsettings.bind('gtk-completion', self.task_entry, 'gtk-completion-enabled', Gio.SettingsBindFlags.DEFAULT)
         self.gsettings.connect('changed::remote-task-list', self.load_tasks)
         self.gsettings.connect('changed::task-list-url', self.load_tasks)
@@ -879,7 +877,8 @@ class Window(Gtk.ApplicationWindow):
             self.gsettings.set_value('virtual-midnight', GLib.Variant('(ii)', (vm.hour, vm.minute)))
             self.gsettings.set_boolean('gtk-completion', bool(old_settings.enable_gtk_completion))
             self.gsettings.set_boolean('settings-migrated', True)
-            log.info(_('Settings from {filename} migrated to GSettings (org.gtimelog)').format(filename=old_settings.get_config_file()))
+            log.info(_('Settings from {filename} migrated to GSettings (org.gtimelog)').format(
+                filename=old_settings.get_config_file()))
 
         mark_time('settings loaded')
 
@@ -1314,7 +1313,7 @@ class Window(Gtk.ApplicationWindow):
         self.date = self.saved_date
         self.time_range = self.saved_time_range
         self.update_send_report_availability()
-        self.add_button.grab_default() # huh
+        self.add_button.grab_default()  # huh
 
     def on_timelog_file_changed(self, monitor, file, other_file, event_type):
         # When I edit timelog.txt with vim, I get a series of notifications:
@@ -1389,7 +1388,6 @@ class Window(Gtk.ApplicationWindow):
 
 
 class TaskEntry(Gtk.Entry):
-
     timelog = GObject.Property(
         type=object, default=None, nick='Time log',
         blurb='Time log object')
@@ -1499,7 +1497,6 @@ class TaskEntry(Gtk.Entry):
 
 
 class LogView(Gtk.TextView):
-
     timelog = GObject.Property(
         type=object, default=None, nick='Time log',
         blurb='Time log object')
@@ -1579,10 +1576,10 @@ class LogView(Gtk.TextView):
 
     def set_up_tags(self):
         buffer = self.get_buffer()
-        buffer.create_tag('today', foreground='#204a87')     # Tango dark blue
+        buffer.create_tag('today', foreground='#204a87')  # Tango dark blue
         buffer.create_tag('duration', foreground='#ce5c00')  # Tango dark orange
-        buffer.create_tag('time', foreground='#4e9a06')      # Tango dark green
-        buffer.create_tag('highlight', foreground='#4e9a06') # Tango dark green
+        buffer.create_tag('time', foreground='#4e9a06')  # Tango dark green
+        buffer.create_tag('highlight', foreground='#4e9a06')  # Tango dark green
         buffer.create_tag('slacking', foreground='gray')
 
     def get_time_window(self):
@@ -1619,7 +1616,7 @@ class LogView(Gtk.TextView):
         self._update_pending = False
         self.get_buffer().set_text('')
         if self.timelog is None:
-            return # not loaded yet
+            return  # not loaded yet
         window = self.get_time_window()
         total = datetime.timedelta(0)
         if self.detail_level == 'chronological':
@@ -1651,7 +1648,7 @@ class LogView(Gtk.TextView):
                     self.write_group(category, duration)
                     total += duration
         else:
-            return # bug!
+            return  # bug!
         if self.filter_text:
             self.w('\n')
             args = [
@@ -1865,7 +1862,6 @@ class LogView(Gtk.TextView):
 
 
 class ReportView(Gtk.TextView):
-
     timelog = GObject.Property(
         type=object, default=None, nick='Time log',
         blurb='Time log object')
@@ -1948,7 +1944,7 @@ class ReportView(Gtk.TextView):
         self._subject = ''
         if self.timelog is None or not self.get_visible():
             self.notify('subject')
-            return # not loaded yet
+            return  # not loaded yet
         window = self.get_time_window()
         reports = Reports(window)
         name = to_unicode(self.name)
@@ -1965,7 +1961,7 @@ class ReportView(Gtk.TextView):
         self.update_subject()
         if self.timelog is None or not self.get_visible():
             self.get_buffer().set_text('')
-            return # not loaded yet
+            return  # not loaded yet
         window = self.get_time_window()
         reports = Reports(window, email_headers=False, style=self.report_style)
         output = StringIO()
@@ -1997,7 +1993,6 @@ class ReportView(Gtk.TextView):
 
 
 class TaskListView(Gtk.TreeView):
-
     tasks = GObject.Property(
         type=object, nick='Tasks',
         blurb='The task list (an instance of TaskList)')
@@ -2035,7 +2030,6 @@ class TaskListView(Gtk.TreeView):
 
 
 class PreferencesDialog(Gtk.Dialog):
-
     use_header_bar = hasattr(Gtk.DialogFlags, 'USE_HEADER_BAR')
 
     def __init__(self, transient_for, page=None):

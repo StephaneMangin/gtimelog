@@ -1,14 +1,12 @@
-#!/usr/bin/python
+#!/usr/bin/env python
+from __future__ import print_function, with_statement
 
+import contextlib
 import re
 import os
 import sys
 import getopt
 import datetime
-
-
-def read_timelog(filename):
-    return file(filename)
 
 
 def todays_entries(today, lines):
@@ -78,9 +76,9 @@ def print_diff(last_time, time, delta, action):
     # format 2
     action = action[:1].title() + action[1:]
     if not delta:
-        print "%s at %s\n" % (action, time)
+        print("%s at %s\n" % (action, time))
     else:
-        print "%-62s  %s" % (action, delta)
+        print("%-62s  %s" % (action, delta))
 
 
 def print_diffs(iter):
@@ -106,7 +104,8 @@ def main(argv=sys.argv):
         if k == '-f':
             filename = v
     if len(args) > 1:
-        print >> sys.stderr, "too many arguments"
+        with contextlib.redirect_stderr(None):
+            print("too many arguments")
     elif len(args) == 1:
         if args[0] == 'yesterday':
             today = datetime.date.today() - datetime.timedelta(1)
@@ -118,30 +117,32 @@ def main(argv=sys.argv):
         else:
             today = datetime.date.today()
 
-    title = "Today, %s" % today.strftime('%Y-%m-%d')
-    print title
-    print "-" * len(title)
-    chain = read_timelog(filename)
-    chain = todays_entries(today, chain)
-    chain = calculate_diffs(chain)
-    first_time, last_time, total_time, total_slack = print_diffs(chain)
-
+    title = "Today, %s" % today.strftime("%Y-%m-%d")
+    print(title)
+    print("-" * len(title))
     now = datetime.datetime.now()
-    print ""
-    print "Total work done: %s" % format_time(total_time.seconds / 60)
-    print "Time spent slacking: %s" % format_time(total_slack.seconds / 60)
-    print ""
-    print "Time now: %s" % now.strftime('%H:%M')
+    first_time, last_time, total_time, total_slack = now
+    with open(filename) as chain:
+        chain = todays_entries(today, chain)
+        chain = calculate_diffs(chain)
+        first_time, last_time, total_time, total_slack = print_diffs(chain)
+
+    print("")
+    print("Total work done: %s" % format_time(total_time.seconds / 60))
+    print("Time spent slacking: %s" % format_time(total_slack.seconds / 60))
+    print("")
+    print("Time now: %s" % now.strftime("%H:%M"))
     if last_time is not None:
         delta = now - last_time
-        print "Time since last entry: %s" % format_time(delta.seconds / 60)
+        print("Time since last entry: %s" % format_time(delta.seconds / 60))
         delta = now - first_time
-        print "Time since first entry: %s" % format_time(delta.seconds / 60)
+        print("Time since first entry: %s" % format_time(delta.seconds / 60))
         est_end_of_work = last_time + datetime.timedelta(hours=8) - total_time
         delta = est_end_of_work - now
-        print "Time left at work: %s (til %s)" % (
-                format_time(delta.seconds / 60),
-                est_end_of_work.strftime("%H:%M"))
+        print(
+            "Time left at work: %s (til %s)"
+            % (format_time(delta.seconds / 60), est_end_of_work.strftime("%H:%M"),)
+        )
 
 
 if __name__ == '__main__':

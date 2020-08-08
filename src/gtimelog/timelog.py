@@ -3,6 +3,7 @@ Non-GUI bits of gtimelog.
 """
 
 from __future__ import unicode_literals
+from __future__ import division
 
 import codecs
 import collections
@@ -16,7 +17,6 @@ from collections import defaultdict
 from hashlib import md5
 from operator import itemgetter
 
-
 PY3 = sys.version_info[0] >= 3
 
 
@@ -27,7 +27,7 @@ def as_minutes(duration):
 
 def as_hours(duration):
     """Convert a datetime.timedelta to a float number of hours."""
-    return duration.days * 24.0 + duration.seconds / (60.0 * 60.0)
+    return duration.days * 24.0 + (duration.seconds / (60.0 * 60.0))
 
 
 def format_duration(duration):
@@ -73,7 +73,7 @@ def parse_time(t):
     m = re.match(r'^(\d+):(\d+)$', t)
     if not m:
         raise ValueError('bad time: %r' % t)
-    hour, min = map(int, m.groups())
+    hour, min = list(map(int, m.groups()))
     return datetime.time(hour, min)
 
 
@@ -423,7 +423,7 @@ class Exports(object):
 
         The file has two columns: task title and time (in minutes).
         """
-        writer = CSVWriter(output)
+        writer = csv.writer(output)
         if title_row:
             writer.writerow(["task", "time (minutes)"])
         work, slack = self.window.grouped_entries()
@@ -439,7 +439,7 @@ class Exports(object):
         The file has four columns: date, time from midnight til arrival at
         work, slacking, and work (in decimal hours).
         """
-        writer = CSVWriter(output)
+        writer = csv.writer(output)
         if title_row:
             writer.writerow(["date", "day-start (hours)",
                              "slacking (hours)", "work (hours)"])
@@ -472,7 +472,7 @@ class Exports(object):
         # convert to hours, and a sortable list
         items = sorted(
             (day, as_hours(start), as_hours(slacking), as_hours(work))
-            for day, (start, slacking, work) in days.items())
+            for day, (start, slacking, work) in list(days.items()))
         writer.writerows(items)
 
 
@@ -565,9 +565,9 @@ class Reports(object):
 
         output.write('\n')
 
-        ordered_by_time = [(time, cat) for cat, time in totals.items()]
+        ordered_by_time = [(time, cat) for cat, time in list(totals.items())]
         ordered_by_time.sort(reverse=True)
-        max_cat_length = max([len(cat) for cat in totals.keys()])
+        max_cat_length = max([len(cat) for cat in list(totals.keys())])
         line_format = '  %-' + str(max_cat_length + 4) + 's %+5s\n'
         output.write('Categories by time spent:\n')
         for time, cat in ordered_by_time:
@@ -600,10 +600,10 @@ class Reports(object):
             spent_working, spent_slacking = self.window.totals(tag)
             tags_totals[tag] = spent_working + spent_slacking
         # compute width of tag label column
-        max_tag_length = max([len(tag) for tag in tags_totals.keys()])
+        max_tag_length = max([len(tag) for tag in list(tags_totals.keys())])
         line_format = '  %-' + str(max_tag_length + 4) + 's %+5s\n'
         # sort by time spent (descending)
-        for tag, spent in sorted(tags_totals.items(),
+        for tag, spent in sorted(list(tags_totals.items()),
                                  key=(lambda it: it[1]),
                                  reverse=True):
             output.write(line_format % (tag, format_duration_short(spent)))
@@ -1127,23 +1127,3 @@ class TaskList(object):
     def reload(self):
         """Reload the task list."""
         self.load()
-
-
-class CSVWriter(object):
-
-    def __init__(self, *args, **kw):
-        self._writer = csv.writer(*args, **kw)
-
-    if PY3:  # pragma: PY3
-        def writerow(self, row):
-            self._writer.writerow(row)
-    else:  # pragma: PY2
-        def writerow(self, row):
-            self._writer.writerow([
-                s.encode('UTF-8') if isinstance(s, unicode) else s  # noqa: F821
-                for s in row
-            ])
-
-    def writerows(self, rows):
-        for row in rows:
-            self.writerow(row)

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Tests for gtimelog.main"""
+from __future__ import unicode_literals
 
 import textwrap
 import unittest
