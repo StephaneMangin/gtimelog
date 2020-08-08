@@ -1,4 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/env python
+from __future__ import print_function
+
 import readline  # noqa
 
 
@@ -29,6 +31,6 @@ while True:
             t1, t2 = map(parse_time, what.split(','))
         else:
             t1, t2 = map(parse_time, what.split())
-        print fmt_delta(t2 - t1)
+        print(fmt_delta(t2 - t1))
     except ValueError:
-        print eval(what)
+        print(eval(what))

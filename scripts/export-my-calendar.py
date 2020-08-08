@@ -1,4 +1,4 @@
-#!/usr/bin/python2.3
+#!/usr/bin/env python
 """
 Experimental script to export GTimeLog data to iCalendar file.
 """
