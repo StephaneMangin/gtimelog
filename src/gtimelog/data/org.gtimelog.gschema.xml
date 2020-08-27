@@ -150,6 +150,36 @@
             <description>If true, the task entry will use the standard GTK+ completion.  If false, it'll only use the custom prefix completion on PageUp/PageDown.</description>
         </key>
 
+        <key name="remote-jira-task" type="b">
+            <default>true</default>
+            <summary>Use JIRA to get remote task</summary>
+            <description>If true, the task sidebar will show tasks fetched from a specified task list URL.</description>
+        </key>
+
+        <key name="jira-server" type="s">
+            <default>"https://jira.atlassian.com"</default>
+            <summary>JIRA server</summary>
+            <description>JIRA server hostname for task retrieval.</description>
+        </key>
+
+        <key name="jira-username" type="s">
+            <default>""</default>
+            <summary>JIRA username</summary>
+            <description>Username for JIRA authentication.</description>
+        </key>
+
+        <key name="jira-assignee-only" type="b">
+            <default>true</default>
+            <summary>JIRA my tasks only</summary>
+            <description>If true, grab only tasks with yourself as assignee.</description>
+        </key>
+
+        <key name="jira-request" type="s">
+            <default>"status not in (Done, Closed, Cancelled, Resolved)"</default>
+            <summary>JIRA custom request</summary>
+            <description>JIRA request to customize tasks retrieval.</description>
+        </key>
+
     </schema>
 
 </schemalist>

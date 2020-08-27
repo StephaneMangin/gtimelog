@@ -3,7 +3,7 @@ from __future__ import print_function, absolute_import
 
 import time
 import sys
-
+from jira import JIRA, JIRAError
 
 DEBUG = '--debug' in sys.argv
 
@@ -141,6 +141,24 @@ def start_smtp_password_lookup(server, username, callback):
                            callback=password_callback)
 
 
+def start_jira_password_lookup(server, username, callback):
+    schema = Secret.get_schema(Secret.SchemaType.COMPAT_NETWORK)
+    attrs = dict(user=username, server=server, protocol='https')
+
+    def password_callback(source, result):
+        password = Secret.password_lookup_finish(result)
+        if password:
+            log.debug("Found the JIRA password in the keyring.")
+        else:
+            log.debug("Did not find the JIRA password in the keyring.")
+        callback(password or '')
+
+    log.debug("Looking up the JIRA password for %s@%s in the keyring.",
+              username, server)
+    Secret.password_lookup(schema, attrs, cancellable=None,
+                           callback=password_callback)
+
+
 def set_smtp_password(server, username, password):
     schema = Secret.get_schema(Secret.SchemaType.COMPAT_NETWORK)
     attrs = dict(user=username, server=server, protocol='smtp')
@@ -153,6 +171,23 @@ def set_smtp_password(server, username, password):
             log.debug("SMTP password stored in the keyring.")
 
     log.debug("Storing the SMTP password for %s in the keyring.", label)
+    Secret.password_store(schema, attrs, collection=Secret.COLLECTION_DEFAULT,
+                          label=label, password=password, cancellable=None,
+                          callback=callback)
+
+
+def set_jira_password(server, username, password):
+    schema = Secret.get_schema(Secret.SchemaType.COMPAT_NETWORK)
+    attrs = dict(user=username, server=server, protocol='https')
+    label = '{user}@{server}'.format_map(attrs)
+
+    def callback(source, result):
+        if not Secret.password_store_finish(result):
+            log.error(_("Failed to store JIRA password in the keyring."))
+        else:
+            log.info("JIRA password stored in the keyring.")
+
+    log.info("Storing the JIRA password for %s in the keyring.", label)
     Secret.password_store(schema, attrs, collection=Secret.COLLECTION_DEFAULT,
                           label=label, password=password, cancellable=None,
                           callback=callback)
@@ -503,6 +538,7 @@ class Application(Gtk.Application):
         self.set_accels_for_action("win.go-home", ["<Alt>Home"])
         self.set_accels_for_action("app.edit-log", ["<Primary>E"])
         self.set_accels_for_action("app.edit-tasks", ["<Primary>T"])
+        self.set_accels_for_action("app.refresh-tasks", ["<Primary>J"])
         self.set_accels_for_action("app.shortcuts", ["<Primary>question"])
         self.set_accels_for_action("app.preferences", ["<Primary>P"])
         self.set_accels_for_action("app.quit", ["<Primary>Q"])
@@ -528,21 +564,30 @@ class Application(Gtk.Application):
         self.open_in_editor(filename)
 
     def on_edit_tasks(self, action, parameter):
-        gsettings = Gio.Settings.new("org.gtimelog")
-        if gsettings.get_boolean('remote-task-list'):
-            uri = gsettings.get_string('task-list-edit-url')
-            if self.get_active_window() is not None:
-                self.get_active_window().editing_remote_tasks = True
-            Gtk.show_uri(None, uri, Gdk.CURRENT_TIME)
-        else:
-            filename = Settings().get_task_list_file()
-            self.open_in_editor(filename)
+        # FIXME: be able to edit local tasks is a must have to allow manual customisation (leaving***, break**, etc)
+        # gsettings = Gio.Settings.new("org.gtimelog")
+        # if gsettings.get_boolean('remote-task-list'):
+        #     uri = gsettings.get_string('task-list-edit-url')
+        #     if self.get_active_window() is not None:
+        #         self.get_active_window().editing_remote_tasks = True
+        #     Gtk.show_uri(None, uri, Gdk.CURRENT_TIME)
+        # elif gsettings.get_boolean('remote-jira-task'):
+        #     uri = gsettings.get_string('jira-server')
+        #     if self.get_active_window() is not None:
+        #         self.get_active_window().editing_remote_tasks = True
+        #     Gtk.show_uri(None, uri, Gdk.CURRENT_TIME)
+        # else:
+        filename = Settings().get_task_list_file()
+        self.open_in_editor(filename)
 
     def on_refresh_tasks(self, action, parameter):
         gsettings = Gio.Settings.new("org.gtimelog")
         if gsettings.get_boolean('remote-task-list'):
             if self.get_active_window() is not None:
                 self.get_active_window().download_tasks()
+        elif gsettings.get_boolean('remote-jira-task'):
+            if self.get_active_window() is not None:
+                self.get_active_window().download_jira_tasks()
 
     def create_if_missing(self, filename):
         if not os.path.exists(filename):
@@ -837,12 +882,14 @@ class Window(Gtk.ApplicationWindow):
         self.gsettings.bind('list-email', self.recipient_entry, 'text', Gio.SettingsBindFlags.DEFAULT)
         self.gsettings.bind('report-style', self.report_view, 'report-style', Gio.SettingsBindFlags.DEFAULT)
         self.gsettings.bind('remote-task-list', self.app.actions.refresh_tasks, 'enabled', Gio.SettingsBindFlags.DEFAULT)
+        self.gsettings.bind('remote-jira-task', self.app.actions.refresh_tasks, 'enabled', Gio.SettingsBindFlags.DEFAULT)
+        self.gsettings.bind('jira-assignee-only', self.app.actions.refresh_tasks, 'enabled', Gio.SettingsBindFlags.DEFAULT)
         self.gsettings.bind('gtk-completion', self.task_entry, 'gtk-completion-enabled', Gio.SettingsBindFlags.DEFAULT)
         self.gsettings.connect('changed::remote-task-list', self.load_tasks)
+        self.gsettings.connect('changed::remote-jira-task', self.load_tasks)
+        self.gsettings.connect('changed::jira-assignee-only', self.load_tasks)
         self.gsettings.connect('changed::task-list-url', self.load_tasks)
-        self.gsettings.connect('changed::task-list-edit-url', self.update_edit_tasks_availability)
         self.gsettings.connect('changed::virtual-midnight', self.virtual_midnight_changed)
-        self.update_edit_tasks_availability()
 
         x, y = self.gsettings.get_value('window-position')
         w, h = self.gsettings.get_value('window-size')
@@ -895,28 +942,26 @@ class Window(Gtk.ApplicationWindow):
 
     def load_tasks(self, *args):
         mark_time("loading tasks")
+        filename = Settings().get_task_list_file()
+        tasks = TaskList(filename)
+        self.tasks_infobar.hide()
         if self.gsettings.get_boolean('remote-task-list'):
             filename = Settings().get_task_list_cache_file()
             tasks = TaskList(filename)
             self.download_tasks()
-        else:
-            filename = Settings().get_task_list_file()
-            tasks = TaskList(filename)
-            self.tasks_infobar.hide()
+        if self.gsettings.get_boolean('remote-jira-task'):
+            filename = Settings().get_task_jira_cache_file()
+            tasks += TaskList(filename)
+            self.download_jira_tasks()
+
         mark_time("tasks loaded")
         if self.tasks:
-            self.unwatch_file(self.tasks.filename)
+            for filename in self.tasks.filenames:
+                self.unwatch_file(filename)
         self.tasks = tasks
         mark_time("tasks presented")
-        self.watch_file(self.tasks.filename, self.on_tasks_file_changed)
-        self.update_edit_tasks_availability()
-
-    def update_edit_tasks_availability(self, *args):
-        if self.gsettings.get_boolean('remote-task-list'):
-            can_edit_tasks = bool(self.gsettings.get_string('task-list-edit-url'))
-        else:
-            can_edit_tasks = True
-        self.app.actions.edit_tasks.set_enabled(can_edit_tasks)
+        for filename in self.tasks.filenames:
+            self.watch_file(filename, self.on_tasks_file_changed)
 
     def update_send_report_availability(self, *args):
         if self.main_stack.get_visible_child_name() == 'report':
@@ -969,6 +1014,61 @@ class Window(Gtk.ApplicationWindow):
         self._download = (message, url)
         soup_session.queue_message(message, self.tasks_downloaded, cache_filename)
 
+    def download_jira_tasks(self):
+        # hide=False and queue_resize() are needed to work around
+        # this bug: https://github.com/gtimelog/gtimelog/issues/89
+        self.cancel_tasks_download(hide=False)
+
+        server = self.gsettings.get_string('jira-server')
+        username = self.gsettings.get_string('jira-username')
+        if not server or not username:
+            log.debug("Not downloading tasks from JIRA: Server or username not specified")
+            return
+        cache_filename = Settings().get_task_jira_cache_file()
+        self.tasks_infobar.set_message_type(Gtk.MessageType.INFO)
+        self.tasks_infobar_label.set_text(_("Downloading tasks from JIRA..."))
+        self.tasks_infobar.connect('response', lambda *args: self.cancel_tasks_download())
+        self.tasks_infobar.show()
+        self.tasks_infobar.queue_resize()
+
+        def callback(password):
+            log.debug("Downloading tasks from %s", server)
+
+            request = self.gsettings.get_string('jira-request')
+            assignee_only = self.gsettings.get_boolean('jira-assignee-only')
+            # By default, the client will connect to a Jira instance started from the Atlassian Plugin SDK.
+            # See
+            # https://developer.atlassian.com/display/DOCS/Installing+the+Atlassian+Plugin+SDK
+            # for details.
+            try:
+                jira = JIRA(basic_auth=(username, password), options={'server': server}, max_retries=0)
+                # Find all issues reported by the username
+                request_data = {
+                    'username': username.replace("@", "\\u0040")
+                }
+                if assignee_only:
+                    if request:
+                        request += " and "
+                    request += "assignee = '{username}'"
+                print(request.format(**request_data))
+                issues = jira.search_issues(request.format(**request_data))
+                issues_content = ""
+                for issue in issues:
+                    if issue.fields.assignee and issue.fields.assignee.emailAddress == username:
+                        issue_name = u'%s (%s)' % (issue.key, issue.fields.summary)
+                    else:
+                        assignee = issue.fields.assignee and issue.fields.assignee.displayName or 'Unassigned'
+                        issue_name = u'%s (%s) - %s' % (issue.key, issue.fields.summary, assignee)
+                    project_name = issue.fields.project.name
+                    issues_content += u'%s:%s \n' % (project_name, issue_name)
+                log.debug("Successfully downloaded %d JIRA tasks" % len(issues))
+                self.jira_tasks_downloaded(JIRAError(200, url=server), issues_content, cache_filename)
+
+            except JIRAError as e:
+                self.jira_tasks_downloaded(e, _("Failed to download tasks : %s") % e, cache_filename)
+
+        start_jira_password_lookup(server, username, callback)
+
     def tasks_downloaded(self, session, message, cache_filename):
         content = message.response_body.data
         if message.status_code != Soup.Status.OK:
@@ -986,6 +1086,22 @@ class Window(Gtk.ApplicationWindow):
                 f.write(content)
             self.check_reload_tasks()
             self.tasks_infobar.hide()
+        self._download = None
+
+    def jira_tasks_downloaded(self, session, tasks, cache_filename):
+        if session.status_code != 200:
+            log.error("Failed to download tasks from %s: %d %s", session.url, session.status_code, session.text)
+            self.tasks_infobar.set_message_type(Gtk.MessageType.ERROR)
+            self.tasks_infobar_label.set_text(_("Download failed."))
+            self.tasks_infobar.connect('response', lambda *args: self.tasks_infobar.hide())
+            self.tasks_infobar.show()
+        else:
+            log.debug("Successfully downloaded tasks from %s" % session.url)
+            with open(cache_filename, 'w') as f:
+                f.write(tasks)
+            self.check_reload_tasks()
+            self.tasks_infobar.hide()
+        #self.check_reload_tasks()
         self._download = None
 
     def gained_focus(self, *args):
@@ -2078,6 +2194,12 @@ class PreferencesDialog(Gtk.Dialog):
         self.port_entry = port_entry
         self.username_entry = builder.get_object('username_entry')
         self.password_entry = builder.get_object('password_entry')
+        jira_entry = builder.get_object('jira_entry')
+        self.jira_server_entry = builder.get_object('jira_server_entry')
+        jira_request_entry = builder.get_object('jira_request_entry')
+        jira_username_entry = builder.get_object('jira_username_entry')
+        self.jira_password_entry = builder.get_object('jira_password_entry')
+        self.jira_assignee_only_entry = builder.get_object('jira_assignee_only_entry')
 
         self.gsettings = Gio.Settings.new("org.gtimelog")
         self.gsettings.bind('hours', hours_entry, 'value', Gio.SettingsBindFlags.DEFAULT)
@@ -2095,6 +2217,12 @@ class PreferencesDialog(Gtk.Dialog):
         self.smtp_port_changed()
         port_entry.connect('focus-out-event', self.smtp_port_set)
         self.gsettings.bind('smtp-username', self.username_entry, 'text', Gio.SettingsBindFlags.DEFAULT)
+        self.gsettings.bind('remote-jira-task', jira_entry, 'active', Gio.SettingsBindFlags.DEFAULT)
+        self.gsettings.bind('jira-server', self.jira_server_entry, 'text', Gio.SettingsBindFlags.DEFAULT)
+        self.gsettings.bind('jira-username', jira_username_entry, 'text', Gio.SettingsBindFlags.DEFAULT)
+        self.gsettings.bind('jira-request', jira_request_entry, 'text', Gio.SettingsBindFlags.DEFAULT)
+        self.gsettings.bind('jira-assignee-only', self.jira_assignee_only_entry, 'active', Gio.SettingsBindFlags.DEFAULT)
+        self.jira_password_entry.connect('focus-out-event', self.update_jira_password)
         self.refresh_password_field()
         server_entry.connect('focus-out-event', self.refresh_password_field)
         self.username_entry.connect('focus-out-event', self.refresh_password_field)
@@ -2151,6 +2279,8 @@ class PreferencesDialog(Gtk.Dialog):
     def refresh_password_field(self, *args):
         server = self.gsettings.get_string("smtp-server")
         username = self.gsettings.get_string("smtp-username")
+        jira_server = self.gsettings.get_string("jira-server")
+        jira_username = self.gsettings.get_string("jira-username")
 
         def callback(password):
             # In theory the user could've focused the password field
@@ -2158,10 +2288,20 @@ class PreferencesDialog(Gtk.Dialog):
             # overwrite it!
             self.password_entry.set_text(password)
 
+        def callback_jira(password):
+            # In theory the user could've focused the password field
+            # and started typing in a new password, in which case we shouldn't
+            # overwrite it!
+            self.jira_password_entry.set_text(password)
+
         if username:
             start_smtp_password_lookup(server, username, callback)
         else:
             self.password_entry.set_text("")
+        if jira_username:
+            start_jira_password_lookup(jira_server, jira_username, callback_jira)
+        else:
+            self.jira_password_entry.set_text("")
 
     def update_password(self, *args):
         server = self.gsettings.get_string("smtp-server")
@@ -2169,6 +2309,13 @@ class PreferencesDialog(Gtk.Dialog):
         password = self.password_entry.get_text()
         if username:
             set_smtp_password(server, username, password)
+
+    def update_jira_password(self, *args):
+        server = self.gsettings.get_string("jira-server")
+        username = self.gsettings.get_string("jira-username")
+        password = self.jira_password_entry.get_text()
+        if username:
+            set_jira_password(server, username, password)
 
 
 def main():
