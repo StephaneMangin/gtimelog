@@ -1,14 +1,15 @@
 """
 Non-GUI bits of gtimelog.
 """
-
+import codecs
 import collections
 import csv
 import datetime
 import os
-import re
 import socket
 import sys
+import re
+import time
 from collections import defaultdict
 from hashlib import md5
 from operator import itemgetter
@@ -1159,51 +1160,75 @@ class TaskList(object):
     loaded_callback = None
     error_callback = None
 
+    _groups = {}
+    _states = {}
+
     def __init__(self, filename):
-        self.filename = filename
-        self.load()
+        self.add_filename(filename)
+        self.last_mtime = self._get_older_mtime()
+
+    def get_groups(self):
+        return ((k, v) for (k, v) in self._groups.items())
+
+    def get_filenames(self):
+        return (f for f in self._states.keys())
+
+    def add_filename(self, path):
+        real_path = os.path.realpath(path)
+        if os.path.exists(real_path) and real_path not in self._states.keys():
+            self._states.update({path: False})
+            self.load()
+
+    def remove_filename(self, path):
+        if path in self._states:
+            del self._states[path]
+            self.reload()
 
     def check_reload(self):
-        """Look at the mtime of tasks.txt, and reload it if necessary.
+        """Look at the mtime of filenames, and reload it if necessary.
 
         Returns True if the file was reloaded.
         """
-        mtime = get_mtime(self.filename)
+        mtime = self._get_older_mtime()
         if mtime != self.last_mtime:
-            self.load()
+            self.reload()
             return True
         else:
             return False
 
+    def _get_older_mtime(self):
+        mtimes = [get_mtime(f) or time.time() for f in self.get_filenames()]
+        return min(mtimes)
+
     def load(self):
-        """Load task list from a file named self.filename."""
+        """Load task list from filenames."""
         groups = {}
         task_order = {}
-        others = []
-        self.last_mtime = get_mtime(self.filename)
         try:
-            with open(self.filename, encoding='utf-8') as f:
-                for index, line in enumerate(f):
-                    line = line.strip()
-                    if not line or line.startswith('#'):
-                        continue
-                    if ':' in line:  # tasks with group prefix
-                        group, task = [s.strip() for s in line.split(':', 1)]
+            to_update = (f for (f, l) in self._states.items() if not l)
+            for path in to_update:
+                with codecs.open(os.path.realpath(path), encoding='UTF-8') as f:
+                    for index, line in enumerate(f):
+                        line = line.strip()
+                        if not line or line.startswith('#'):
+                            continue
+                        if ':' in line:
+                            group, task = [s.strip() for s in line.split(':', 1)]
+                            task_order[group + ': ' + task] = index
+                        else:
+                            group, task = self.other_title, line
+                            task_order[line] = index
                         groups.setdefault(group, []).append(task)
-                        task_order[group + ': ' + task] = index
-                    else:  # "other" tasks
-                        others.append(line)
-                        task_order[line] = index
+                    self._states[path] = True
         except IOError:
-            pass # the file's not there, so what?
-        # append the "other" tasks at the end
-        self.groups = list(groups.items())
-        if others:
-            self.groups.append((self.other_title, others))
+            pass  # the file's not there, so what?
+        self._groups.update(groups)
         self.task_order = task_order
 
     def reload(self):
         """Reload the task list."""
+        self._groups = {}
+        self._states = dict({(f, False) for f in self._states.keys()})
         self.load()
 
     def order(self, value):

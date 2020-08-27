@@ -1,0 +1,1 @@
+/home/smangin/.local/share/gtimelog/remote-jira-tasks.txt

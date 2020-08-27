@@ -11,7 +11,7 @@ from .utils import require_version
 require_version('Gtk', '3.0')
 require_version('Soup', '2.4')
 require_version('Secret', '1')
-from gi.repository import Gio, GObject, Gtk, Secret, Soup
+from gi.repository import Gio, GObject, Gtk, Secret, Soup, Secret
 
 
 log = logging.getLogger('gtimelog.secrets')
