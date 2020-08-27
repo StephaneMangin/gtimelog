@@ -97,6 +97,9 @@ class Settings(object):
     def get_task_list_cache_file(self):
         return os.path.join(self.get_data_dir(), 'remote-tasks.txt')
 
+    def get_task_jira_cache_file(self):
+        return os.path.join(self.get_data_dir(), 'remote-jira-tasks.txt')
+
     def _config(self):
         config = RawConfigParser()
         config.add_section('gtimelog')
