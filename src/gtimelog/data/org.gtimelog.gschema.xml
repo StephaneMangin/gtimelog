@@ -80,6 +80,12 @@
             <range min="0" max="24" />
         </key>
 
+        <key name="week-days" type="s">
+            <default>"1,2,3,4,5"</default>
+            <summary>Week Days</summary>
+            <description>Target days of work, to be used for estimating time left at the office.</description>
+        </key>
+
         <key name="virtual-midnight" type="(ii)">
             <default>(2, 0)</default>
             <summary>Virtual midnight</summary>

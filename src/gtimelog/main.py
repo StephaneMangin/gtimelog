@@ -637,6 +637,7 @@ class Window(Gtk.ApplicationWindow):
         self.gsettings.bind('show-task-pane', self.task_pane, 'visible', Gio.SettingsBindFlags.DEFAULT)
         self.gsettings.bind('hours', self.log_view, 'hours', Gio.SettingsBindFlags.DEFAULT)
         self.gsettings.bind('office-hours', self.log_view, 'office-hours', Gio.SettingsBindFlags.DEFAULT)
+        self.gsettings.bind('week-days', self.log_view, 'week-days', Gio.SettingsBindFlags.DEFAULT)
         self.gsettings.bind('name', self.report_view, 'name', Gio.SettingsBindFlags.DEFAULT)
         self.gsettings.bind('sender', self.sender_entry, 'text', Gio.SettingsBindFlags.DEFAULT)
         self.gsettings.bind('list-email', self.recipient_entry, 'text', Gio.SettingsBindFlags.DEFAULT)
@@ -673,6 +674,7 @@ class Window(Gtk.ApplicationWindow):
             self.gsettings.set_boolean('show-task-pane', old_settings.show_tasks)
             self.gsettings.set_double('hours', old_settings.hours)
             self.gsettings.set_double('office-hours', old_settings.office_hours)
+            self.gsettings.set_double('week-days', old_settings.week_days)
             self.gsettings.set_string('name', old_settings.name)
             self.gsettings.set_string('sender', old_settings.sender)
             self.gsettings.set_string('list-email', old_settings.email)
@@ -1374,6 +1376,10 @@ class LogView(Gtk.TextView):
         type=bool, default=False, nick='Rounding Time Force Above',
         blurb='Force rounding up')
 
+    week_days = GObject.Property(
+        type=str, default='1,2,3,4,5', nick='Week Days',
+        blurb='List of week days (list of international day integers separated by comma)')
+
     current_task = GObject.Property(
         type=str, nick='Current task',
         blurb='Current task in progress')
@@ -1408,6 +1414,7 @@ class LogView(Gtk.TextView):
         self.connect('notify::office-hours', self.queue_footer_update)
         self.connect('notify::rounding-time', self.queue_footer_update)
         self.connect('notify::rounding-time-force-above', self.queue_footer_update)
+        self.connect('notify::week-days', self.queue_footer_update)
         self.connect('notify::current-task', self.queue_footer_update)
         self.connect('notify::now', self.queue_footer_update)
         self.connect('notify::filter-text', self.queue_update)
@@ -1699,6 +1706,22 @@ class LogView(Gtk.TextView):
                     (format_duration(time_left), 'duration'),
                     (time_to_leave, 'time'),
                 )
+            if self.week_days:
+                self.w('\n')
+                weekly_window = self.timelog.window_for_week(self.date)
+                week_total_work, week_total_slacking = weekly_window.totals()
+                hours = datetime.timedelta(hours=self.office_hours)
+                current_week_day = datetime.datetime.now().isoweekday()
+                full_weekdays = [int(i) for i in self.week_days.split(",")]
+                total_week_hours = len(full_weekdays) * hours
+                worked_days = len([i for i in full_weekdays if i <= current_week_day])
+                left_days = len(full_weekdays) - worked_days
+                estimated_week_hours = ((left_days * hours) + week_total_work + time_left)
+                estimated_overtime = estimated_week_hours - total_week_hours
+                self.wfmt(
+                    _('Estimated week overtime: {0}'),
+                    (format_duration(estimated_overtime), 'duration'),
+                )
 
         if self.office_hours:
             self.w('\n')
@@ -1929,6 +1952,7 @@ class PreferencesDialog(Gtk.Dialog):
 
         hours_entry = builder.get_object('hours_entry')
         office_hours_entry = builder.get_object('office_hours_entry')
+        week_days_entry = builder.get_object('week_days_entry')
         name_entry = builder.get_object('name_entry')
         sender_entry = builder.get_object('sender_entry')
         recipient_entry = builder.get_object('recipient_entry')
@@ -1943,6 +1967,7 @@ class PreferencesDialog(Gtk.Dialog):
         self.gsettings = Gio.Settings.new("org.gtimelog")
         self.gsettings.bind('hours', hours_entry, 'value', Gio.SettingsBindFlags.DEFAULT)
         self.gsettings.bind('office-hours', office_hours_entry, 'value', Gio.SettingsBindFlags.DEFAULT)
+        self.gsettings.bind('week-days', week_days_entry, 'value', Gio.SettingsBindFlags.DEFAULT)
         self.gsettings.bind('name', name_entry, 'text', Gio.SettingsBindFlags.DEFAULT)
         self.gsettings.bind('sender', sender_entry, 'text', Gio.SettingsBindFlags.DEFAULT)
         self.gsettings.bind('list-email', recipient_entry, 'text', Gio.SettingsBindFlags.DEFAULT)

@@ -200,6 +200,9 @@ msgstr ""
 msgid "Time left at work: {0} (till {1:%H:%M})"
 msgstr "Temps restant au travail: {0} (jusqu'à {1:%H:%M})"
 
+msgid "Estimated week overtime: {0}"
+msgstr "Heures supp. hebdomadaire estimées : {0}"
+
 #, python-brace-format
 msgid "At office today: {0} ({1} overtime)"
 msgstr "Au bureau aujourd'hui: {0} ({1} de dépassement)"

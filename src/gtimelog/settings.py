@@ -37,6 +37,7 @@ class Settings(object):
 
     hours = 8
     office_hours = 9
+    week_days = "1,2,3,4,5"
     virtual_midnight = datetime.time(2, 0)
     rounding_time = 0
     rounding_time_force_above = False
@@ -45,6 +46,7 @@ class Settings(object):
     edit_task_list_cmd = ''
 
     show_office_hours = True
+    show_week_days = True
     show_tray_icon = False
     prefer_app_indicator = True
     start_in_tray = False
@@ -106,6 +108,7 @@ class Settings(object):
                    str(self.enable_gtk_completion))
         config.set('gtimelog', 'hours', str(self.hours))
         config.set('gtimelog', 'office-hours', str(self.office_hours))
+        config.set('gtimelog', 'week-days', str(self.week_days))
         config.set('gtimelog', 'virtual_midnight',
                    self.virtual_midnight.strftime('%H:%M'))
         config.set('gtimelog', 'rounding_time', str(self.rounding_time))
@@ -114,6 +117,8 @@ class Settings(object):
         config.set('gtimelog', 'edit_task_list_cmd', self.edit_task_list_cmd)
         config.set('gtimelog', 'show_office_hours',
                    str(self.show_office_hours))
+        config.set('gtimelog', 'show_week_days',
+                   str(self.show_week_days))
         config.set('gtimelog', 'show_tray_icon', str(self.show_tray_icon))
         config.set('gtimelog', 'prefer_app_indicator',
                    str(self.prefer_app_indicator))
@@ -139,6 +144,7 @@ class Settings(object):
                                                        'gtk-completion')
         self.hours = config.getfloat('gtimelog', 'hours')
         self.office_hours = config.getfloat('gtimelog', 'office-hours')
+        self.week_days = config.getfloat('gtimelog', 'week-days')
         self.virtual_midnight = parse_time(config.get('gtimelog',
                                                       'virtual_midnight'))
         self.rounding_time = config.getint('gtimelog', 'rounding_time')
@@ -147,6 +153,8 @@ class Settings(object):
         self.edit_task_list_cmd = config.get('gtimelog', 'edit_task_list_cmd')
         self.show_office_hours = config.getboolean('gtimelog',
                                                    'show_office_hours')
+        self.show_week_days = config.getboolean('gtimelog',
+                                                   'show_week_days')
         self.show_tray_icon = config.getboolean('gtimelog', 'show_tray_icon')
         self.prefer_app_indicator = config.getboolean('gtimelog',
                                                       'prefer_app_indicator')

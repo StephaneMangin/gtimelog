@@ -188,6 +188,9 @@ msgstr ""
 msgid "Time left at work: {0} (till {1:%H:%M})"
 msgstr ""
 
+msgid "Estimated week overtime: {0}"
+msgstr ""
+
 #, python-brace-format
 msgid "At office today: {0} ({1} overtime)"
 msgstr ""

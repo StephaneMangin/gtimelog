@@ -199,6 +199,19 @@
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkLabel" id="week_days_label">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Week days</property>
+                    <property name="ellipsize">end</property>
+                    <property name="xalign">1</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">2</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkSpinButton" id="hours_entry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -230,6 +243,21 @@
                   <packing>
                     <property name="left_attach">1</property>
                     <property name="top_attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="week_days_entry">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="width_chars">30</property>
+                    <property name="max_width_chars">30</property>
+                    <property name="text">1,2,3,4,5</property>
+                    <property name="xalign">1</property>
+                    <property name="activates_default">True</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">2</property>
                   </packing>
                 </child>
                 <child>
@@ -597,6 +625,7 @@
       <widget name="rounding_time_label"/>
       <widget name="hours_label"/>
       <widget name="office_hours_label"/>
+      <widget name="week_days_label"/>
     </widgets>
   </object>
   <object class="GtkSizeGroup" id="email_labels">
