@@ -1,0 +1,162 @@
+# =============================================================================
+# pyproject.toml -- single source of truth for all Python tooling configuration
+# =============================================================================
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+# ---------------------------------------------------------------------------
+# Ruff -- replaces flake8, isort, black, pyflakes, pycodestyle, pydocstyle
+# ---------------------------------------------------------------------------
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+src = ["src", "scripts"]
+include = ["src/**/*.py", "scripts/**/*.py", "setup.py", "benchmark.py"]
+exclude = [
+    ".git", ".tox", ".venv", "build", "dist", "__pycache__",
+    "*.egg-info", "flatpak",
+]
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort
+    "N",      # pep8-naming
+    "UP",     # pyupgrade
+    "B",      # flake8-bugbear
+    "A",      # flake8-builtins
+    "C4",     # flake8-comprehensions
+    "SIM",    # flake8-simplify
+    "TCH",    # flake8-type-checking
+    "RUF",    # ruff-specific rules
+    "C90",    # mccabe complexity
+    "S",      # flake8-bandit (security)
+    "T20",    # flake8-print
+    "PT",     # flake8-pytest-style
+    "RET",    # flake8-return
+    "PIE",    # flake8-pie
+]
+ignore = [
+#    "E501",
+#    "E402",
+#    "E741",
+#    "S101",
+#    "S108",
+#    "S307",
+#    "S314",
+#    "S324",
+#    "S603",
+#    "S606",
+#    "T201",
+#    "RET504",
+#    "RET505",
+#    "RET503",
+#    "RET507",
+#    "SIM102",
+#    "SIM103",
+#    "SIM108",
+#    "SIM118",
+#    "UP004",
+#    "UP008",
+#    "UP009",
+#    "UP015",
+#    "UP024",
+#    "UP031",
+#    "UP032",
+#    "B006",
+#    "B007",
+#    "B018",
+#    "B904",
+#    "B905",
+#    "N801",
+#    "N802",
+#    "N803",
+#    "N805",
+#    "N806",
+#    "N999",
+#    "PT009",
+#    "PT027",
+#    "A001",
+#    "A002",
+#    "A006",
+#    "C401",
+#    "C408",
+#    "C901",
+#    "PIE790",
+#    "RUF005",
+#    "RUF012",
+#    "RUF015",
+#    "RUF021",
+#    "RUF059",
+#    "RUF100",
+]
+[tool.ruff.lint.per-file-ignores]
+"scripts/*" = ["T201", "S603", "S607"]
+"**/tests/*" = ["S101", "S108", "A002", "A006", "N802", "N805", "N806", "PT011", "E402", "S314"]
+"__manifest__.py" = ["B018", "N999", "RUF"]
+"src/gtimelog/addons/__init__.py" = ["S307"]
+"src/gtimelog/views.py" = ["S314"]
+"src/gtimelog/addons/reports_ical/controllers/ical_export.py" = ["S324"]
+"src/gtimelog/paths.py" = ["S603", "S606"]
+"src/gtimelog/debian-paths.py" = ["N999"]
+"setup.py" = ["T201"]
+[tool.ruff.lint.isort]
+known-first-party = ["gtimelog"]
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+[tool.ruff.lint.mccabe]
+max-complexity = 15
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+line-ending = "lf"
+# ---------------------------------------------------------------------------
+# Coverage -- pytest-cov configuration
+# ---------------------------------------------------------------------------
+[tool.coverage.run]
+source = ["src/gtimelog"]
+branch = true
+omit = [
+    "*/tests/*",
+    "*/__pycache__/*",
+    "*/locale/*",
+    "*/i18n/*",
+    "*/data/*",
+]
+[tool.coverage.report]
+show_missing = true
+precision = 2
+fail_under = 40
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if __name__ == .__main__.",
+    "raise NotImplementedError",
+    "pass",
+    "except ImportError",
+]
+[tool.coverage.html]
+directory = "htmlcov"
+# ---------------------------------------------------------------------------
+# Bandit -- security linter
+# ---------------------------------------------------------------------------
+[tool.bandit]
+exclude_dirs = ["tests", ".tox", ".venv", "build", "dist"]
+skips = ["B101", "B307", "B314", "B324", "B404", "B405", "B603", "B606"]
+# ---------------------------------------------------------------------------
+# Pytest
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+norecursedirs = [
+    ".*", "*.egg-info", "dist", "build", "tmp", "scripts",
+    "__pycache__", "controllers", "models", "settings", "views",
+    "i18n", "data", "locale", "po",
+]
+python_files = ["test_*.py"]
+python_functions = ["!test_suite"]
+testpaths = ["src/gtimelog/addons"]
+addopts = "--ignore=setup.py --doctest-modules --strict-markers -ra"
+doctest_optionflags = ["NORMALIZE_WHITESPACE", "ELLIPSIS"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]

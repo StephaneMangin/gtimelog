@@ -1,0 +1,176 @@
+# =============================================================================
+# .pre-commit-config.yaml — run `pre-commit install` once, then automatic on
+# every `git commit`.  Run manually: `pre-commit run -a`
+# =============================================================================
+default_language_version:
+  python: python3
+
+repos:
+  # -------------------------------------------------------------------------
+  # General file hygiene
+  # -------------------------------------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-xml
+      - id: check-json
+        exclude: '\.vscode/'
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+      - id: check-case-conflict
+      - id: check-symlinks
+      - id: debug-statements          # leftover breakpoint() / pdb
+        exclude: '^scripts/'
+      - id: detect-private-key
+      - id: fix-byte-order-marker
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+
+  # -------------------------------------------------------------------------
+  # Ruff — linter + formatter (replaces black, flake8, isort, pyupgrade)
+  # -------------------------------------------------------------------------
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.12
+    hooks:
+      # Lint first (auto-fix safe issues like import sorting)
+      - id: ruff
+        args: ['--fix', '--exit-non-zero-on-fix']
+        exclude: '^(scripts/|\.github/|benchmark\.py|runtests|setup\.py)'
+      # Then format
+      - id: ruff-format
+        exclude: '^(scripts/|\.github/|benchmark\.py|runtests|setup\.py)'
+
+  # -------------------------------------------------------------------------
+  # Security — bandit
+  # -------------------------------------------------------------------------
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.9.3
+    hooks:
+      - id: bandit
+        args: ['-c', 'pyproject.toml', '-r', 'src/']
+        additional_dependencies: ['bandit[toml]']
+        exclude: '^(scripts/|\.github/)'
+
+  # -------------------------------------------------------------------------
+  # Dead code detection — vulture
+  # -------------------------------------------------------------------------
+  - repo: https://github.com/jendrikseipp/vulture
+    rev: v2.14
+    hooks:
+      - id: vulture
+        args: ['src/gtimelog', 'vulture_whitelist.py', '--min-confidence', '80']
+
+  # -------------------------------------------------------------------------
+  # Complexity gate — xenon (wraps radon)
+  # Blocks commit if any function exceeds C complexity, any module exceeds B,
+  # or the project average exceeds A.
+  #
+  # Grades:  A (1-5)  B (6-10)  C (11-15)  D (16-20)  E (21-25)  F (26+)
+  # -------------------------------------------------------------------------
+  - repo: local
+    hooks:
+      - id: xenon-complexity
+        name: 'xenon — cyclomatic complexity gate'
+        entry: xenon
+        args: ['--max-absolute', 'C', '--max-modules', 'B', '--max-average', 'A', 'src/']
+        language: python
+        additional_dependencies: ['xenon']
+        pass_filenames: false
+        types: [python]
+
+  # -------------------------------------------------------------------------
+  # Coverage quick-check (runs fast unit tests, fails if below threshold)
+  # The threshold is set in pyproject.toml [tool.coverage.report] fail_under
+  # -------------------------------------------------------------------------
+  - repo: local
+    hooks:
+      - id: coverage-check
+        name: 'coverage — minimum threshold gate'
+        entry: bash
+        args:
+          - '-c'
+          - |
+            set -e
+            python -m coverage run \
+              --source=src/gtimelog --branch \
+              --omit='*/tests/*,*/__pycache__/*,*/locale/*,*/i18n/*,*/data/*' \
+              -m pytest --override-ini="addopts=--doctest-modules" -q --tb=no 2>&1 | tail -5
+            python -m coverage report --fail-under=40 --skip-covered 2>&1 | tail -10
+        language: system
+        pass_filenames: false
+        types: [python]
+        stages: [pre-push]    # heavy — only on push, not every commit
+
+  # -------------------------------------------------------------------------
+  # Radon ASCII report — detailed complexity breakdown (informational)
+  # Not a gate; prints a visual report so you can spot hotspots.
+  # -------------------------------------------------------------------------
+  - repo: local
+    hooks:
+      - id: radon-report
+        name: 'radon — complexity report (informational)'
+        entry: bash
+        args:
+          - '-c'
+          - 'python3 scripts/quality_gate.py'
+        language: system
+        pass_filenames: false
+        types: [python]
+        verbose: true
+
+  # -------------------------------------------------------------------------
+  # Addon component convention — forbid _inherit + different _name
+  # -------------------------------------------------------------------------
+  - repo: local
+    hooks:
+      - id: inherit-name-check
+        name: 'addon convention — _inherit/_name rule'
+        entry: python3
+        args: ['scripts/check_inherit_name_rule.py']
+        language: system
+        pass_filenames: false
+        types: [python]
+
+  # -------------------------------------------------------------------------
+  # XML / UI validation
+  # -------------------------------------------------------------------------
+  - repo: local
+    hooks:
+      - id: validate-xml
+        name: 'validate XML/UI files'
+        entry: python3
+        args: ['-c', 'import sys, xml.etree.ElementTree as ET; [ET.parse(f) for f in sys.argv[1:]]']
+        language: system
+        types: [xml]
+
+  # -------------------------------------------------------------------------
+  # Manifest completeness — every addon must have required fields
+  # -------------------------------------------------------------------------
+  - repo: local
+    hooks:
+      - id: check-manifests
+        name: 'check addon __manifest__.py files'
+        entry: bash
+        args:
+          - '-c'
+          - |
+            ok=0; fail=0
+            for m in $(find src/gtimelog/addons -name '__manifest__.py'); do
+              addon=$(basename $(dirname "$m"))
+              data=$(python3 -c "d=eval(open('$m').read()); missing=[k for k in ('name','version','depends') if k not in d]; print(','.join(missing) if missing else 'ok')")
+              if [ "$data" != "ok" ]; then
+                echo "✗ $addon: missing fields: $data"
+                fail=1
+              else
+                ok=$((ok+1))
+              fi
+            done
+            [ $fail -eq 0 ] && echo "✓ all $ok addon manifests valid" || exit 1
+        language: system
+        pass_filenames: false
+        types: [python]

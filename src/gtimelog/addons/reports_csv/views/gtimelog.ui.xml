@@ -1,0 +1,17 @@
+<ui_extension target="gtimelog.ui">
+  <!-- Add CSV export button in headerbar (before view_button) -->
+  <xpath expr=".//object[@id='view_button']/.." position="before">
+    <child>
+      <object class="GtkButton" id="download_csv_button">
+        <property name="label" translatable="yes">CSV</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="action_name">win.download-csv</property>
+      </object>
+      <packing>
+        <property name="pack_type">end</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+  </xpath>
+</ui_extension>

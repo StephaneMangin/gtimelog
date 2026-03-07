@@ -1,0 +1,10 @@
+<ui_extension target="menus.ui">
+  <xpath expr=".//menu[@id='window_menu']/section/item[attribute='app.shortcuts']/.." position="before">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">Report...</attribute>
+        <attribute name="action">win.report</attribute>
+      </item>
+    </section>
+  </xpath>
+</ui_extension>

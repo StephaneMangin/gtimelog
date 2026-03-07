@@ -80,10 +80,29 @@
             <range min="0" max="24" />
         </key>
 
+        <key name="week-days" type="s">
+            <default>"Monday,Tuesday,Wednesday,Thursday,Friday"</default>
+            <summary>Week Days</summary>
+            <description>Target days of work (comma-separated day names: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday), to be used for estimating time left at the office.</description>
+        </key>
+
         <key name="virtual-midnight" type="(ii)">
             <default>(2, 0)</default>
             <summary>Virtual midnight</summary>
             <description>Hour and minute that say when a work day ends and another begins.</description>
+        </key>
+
+        <key name="rounding-time" type="i">
+            <default>0</default>
+            <summary>Rounding Time</summary>
+            <description>Rounding time in minutes to round the time recorded.</description>
+            <range min="0" max="65535" />
+        </key>
+
+        <key name="rounding-time-force-above" type="b">
+            <default>false</default>
+            <summary>Rounding Time Force Above</summary>
+            <description>Force the rounding up if rounding is less than current time.</description>
         </key>
 
         <key name="name" type="s">
@@ -136,7 +155,26 @@
             <choices>
                 <choice value="plain"/>
                 <choice value="categorized"/>
+                <choice value="performance"/>
             </choices>
+        </key>
+
+        <key name="attach-csv-to-reports" type="b">
+            <default>false</default>
+            <summary>Attach CSV to email reports</summary>
+            <description>If true, daily CSV export will be attached to email reports.</description>
+        </key>
+
+        <key name="show-ical-export-button" type="b">
+            <default>true</default>
+            <summary>Show iCalendar export button</summary>
+            <description>If true, show the iCalendar export button in report mode.</description>
+        </key>
+
+        <key name="attach-ical-to-reports" type="b">
+            <default>false</default>
+            <summary>Attach iCalendar to email reports</summary>
+            <description>If true, attach an iCalendar (.ics) export to report emails.</description>
         </key>
 
         <key name="remote-task-list" type="b">
@@ -157,10 +195,133 @@
             <description>URL for editing tasks for the task pane.  Will be opened in a browser window if the user asks to edit tasks.</description>
         </key>
 
+        <!-- Generic task sync settings (provider-agnostic) -->
+        <key name="auto-sync-enabled" type="b">
+            <default>false</default>
+            <summary>Enable automatic task synchronization</summary>
+            <description>If true, synchronized tasks are refreshed periodically in the background.</description>
+        </key>
+
+        <key name="auto-sync-interval-minutes" type="i">
+            <default>30</default>
+            <summary>Auto sync interval</summary>
+            <description>Interval in minutes between automatic synchronization runs.</description>
+        </key>
+
+        <key name="last-sync-success" type="b">
+            <default>false</default>
+            <summary>Last sync success</summary>
+            <description>Whether the latest synchronization run completed successfully.</description>
+        </key>
+
+        <key name="last-sync-at" type="s">
+            <default>""</default>
+            <summary>Last sync timestamp</summary>
+            <description>ISO datetime string of the latest synchronization attempt.</description>
+        </key>
+
+        <key name="last-sync-message" type="s">
+            <default>"Not synchronized yet."</default>
+            <summary>Last sync message</summary>
+            <description>Status message describing the latest synchronization outcome.</description>
+        </key>
+
+        <!-- Planio-specific synchronization settings -->
+        <key name="planio-enabled" type="b">
+            <default>false</default>
+            <summary>Enable Planio task synchronization</summary>
+            <description>If true, task synchronization will use Planio as remote source.</description>
+        </key>
+
+        <key name="planio-url" type="s">
+            <default>""</default>
+            <summary>Planio URL</summary>
+            <description>Base URL of the Planio instance used for task synchronization.</description>
+        </key>
+
+        <key name="planio-customer" type="s">
+            <default>"ACSONE"</default>
+            <summary>Planio customer name</summary>
+            <description>Customer prefix used when formatting synchronized tasks.</description>
+        </key>
+
+        <key name="planio-project-filter" type="s">
+            <default>""</default>
+            <summary>Planio project filter</summary>
+            <description>Optional Planio project id or slug used to filter synchronized issues.</description>
+        </key>
+
+        <key name="planio-category-filter" type="s">
+            <default>""</default>
+            <summary>Planio category filter</summary>
+            <description>Optional Planio category id or exact name used to filter synchronized issues.</description>
+        </key>
+
+        <key name="planio-exclude-resolved" type="b">
+            <default>true</default>
+            <summary>Exclude resolved Planio issues</summary>
+            <description>If true, resolved issues (New, Closed, QA ok) will be excluded from synchronization.</description>
+        </key>
+
+        <key name="planio-task-format" type="s">
+            <default>"{customer_name}: {status_icon} {project_name} / {work_package}{category} -&gt; #{id} {subject} / -- {customer_name}-{project_short}-{id}"</default>
+            <summary>Planio task line format</summary>
+            <description>Template used to format synchronized Planio issues in task list files.</description>
+        </key>
+
+        <key name="planio-auto-sync-enabled" type="b">
+            <default>false</default>
+            <summary>Enable automatic Planio synchronization</summary>
+            <description>If true, synchronized tasks are refreshed periodically in the background.</description>
+        </key>
+
+        <key name="planio-auto-sync-interval-minutes" type="i">
+            <default>30</default>
+            <summary>Planio auto sync interval</summary>
+            <description>Interval in minutes between automatic synchronization runs.</description>
+        </key>
+
+        <key name="planio-last-sync-success" type="b">
+            <default>false</default>
+            <summary>Planio last sync success</summary>
+            <description>Whether the latest Planio synchronization run completed successfully.</description>
+        </key>
+
+        <key name="planio-last-sync-at" type="s">
+            <default>""</default>
+            <summary>Planio last sync timestamp</summary>
+            <description>ISO datetime string of the latest Planio synchronization attempt.</description>
+        </key>
+
+        <key name="planio-last-sync-message" type="s">
+            <default>"Not synchronized yet."</default>
+            <summary>Planio last sync message</summary>
+            <description>Status message describing the latest Planio synchronization outcome.</description>
+        </key>
+
         <key name="gtk-completion" type="b">
             <default>true</default>
             <summary>Use completion</summary>
             <description>If true, the task entry will use the standard GTK+ completion.  If false, it'll only use the custom prefix completion on PageUp/PageDown.</description>
+        </key>
+
+        <key name="disabled-addons" type="as">
+            <default>[]</default>
+            <summary>Disabled modules</summary>
+            <description>List of disabled addon module identifiers. Changes are applied on next application restart.</description>
+        </key>
+
+        <!-- slack_distribution addon -->
+        <key name="slack-time-repartition" type="b">
+            <default>false</default>
+            <summary>Slack Time Repartition</summary>
+            <description>If true, enables distribution of slacking time marked with *** to other entries.</description>
+        </key>
+
+        <key name="proportional-repartition" type="b">
+            <default>true</default>
+            <summary>Proportional Repartition</summary>
+            <description>If true, distributes slack time proportionally based on entry duration. If false, distributes equally.</description>
         </key>
 
     </schema>

@@ -3,11 +3,12 @@ import argparse
 import re
 import sys
 
-
-time_rx = re.compile(r'(\d+) hours?,? (\d+) min$'
-                     r'|(\d+) hours?$'
-                     r'|(\d+) min$'
-                     r'|(\d\d+):(\d\d)$')
+time_rx = re.compile(
+    r'(\d+) hours?,? (\d+) min$'
+    r'|(\d+) hours?$'
+    r'|(\d+) min$'
+    r'|(\d\d+):(\d\d)$'
+)
 
 
 def parse_time(s):
@@ -21,29 +22,25 @@ def parse_time(s):
 def parse_time_line(line):
     if '  ' in line:
         return parse_time(line.rpartition('  ')[-1])
-    elif ' ' in line:
+    if ' ' in line:
         return parse_time(line.rpartition(' ')[-1])
-    else:
-        return None
+    return None
 
 
 def format_time(t):
     h, m = divmod(t, 60)
     if h and m:
-        return '%d hour%s, %d min' % (h, h != 1 and "s" or "", m)
-    elif h:
-        return '%d hour%s' % (h, h != 1 and "s" or "")
-    else:
-        return '%d min' % m
+        return '%d hour%s, %d min' % (h, (h != 1 and 's') or '', m)
+    if h:
+        return '%d hour%s' % (h, (h != 1 and 's') or '')
+    return '%d min' % m
 
 
-parser = argparse.ArgumentParser(description="sum time entries")
+parser = argparse.ArgumentParser(description='sum time entries')
 parser.add_argument(
-    "-d", "--decimal", action="store_true",
-    help="output decimal hours (12.3) instead of hours and minutes")
-parser.add_argument(
-    "--test", action="store_true",
-    help=argparse.SUPPRESS)
+    '-d', '--decimal', action='store_true', help='output decimal hours (12.3) instead of hours and minutes'
+)
+parser.add_argument('--test', action='store_true', help=argparse.SUPPRESS)
 
 
 def main():
@@ -62,9 +59,9 @@ def main():
         total += time
 
     if args.decimal:
-        print("** Total: %.2f hours" % (total / 60.0))
+        print('** Total: %.2f hours' % (total / 60.0))
     else:
-        print("** Total: %s" % format_time(total))
+        print('** Total: %s' % format_time(total))
 
 
 def test_parse_time():
@@ -76,5 +73,5 @@ def test_parse_time():
     assert parse_time_line('task task  1 hour 42 min') == 102
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

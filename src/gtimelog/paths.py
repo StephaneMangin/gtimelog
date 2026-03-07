@@ -1,16 +1,12 @@
-"""
-Resource locations for running out of source checkouts and pip installs
-"""
-
+import contextlib
 import os
 import subprocess
 import sys
 
-
 here = os.path.dirname(__file__)
 
 SCHEMA_DIR = os.path.join(here, 'data')
-if SCHEMA_DIR and not os.environ.get('GSETTINGS_SCHEMA_DIR'):
+if SCHEMA_DIR:
     # Have to do this before importing 'gi'.
     # Note: it has been brought to my attention that I can do
     #   source = Gio.SettingsSchemaSource.new_from_directory(SCHEMA_DIR,
@@ -20,24 +16,26 @@ if SCHEMA_DIR and not os.environ.get('GSETTINGS_SCHEMA_DIR'):
     os.environ['GSETTINGS_SCHEMA_DIR'] = SCHEMA_DIR
     if not os.path.exists(os.path.join(SCHEMA_DIR, 'gschemas.compiled')):
         # This, too, I have to do before importing 'gi'.
-        print("Compiling GSettings schema")
         glib_compile_schemas = os.path.join(sys.prefix, 'lib', 'site-packages', 'gnome', 'glib-compile-schemas.exe')
         if not os.path.exists(glib_compile_schemas):
             glib_compile_schemas = 'glib-compile-schemas'
-        try:
+        with contextlib.suppress(OSError):
             subprocess.call([glib_compile_schemas, SCHEMA_DIR])
-        except OSError as e:
-            print("Failed: %s" % e)
 
 
-ui_dir = here
+_addons_dir = os.path.join(here, 'addons')
+_base_views = os.path.join(_addons_dir, 'base', 'views')
+_base_data = os.path.join(_addons_dir, 'base', 'data')
+_core_data = os.path.join(here, 'data')
 
-UI_FILE = os.path.join(ui_dir, 'gtimelog.ui')
-PREFERENCES_UI_FILE = os.path.join(ui_dir, 'preferences.ui')
-ABOUT_DIALOG_UI_FILE = os.path.join(ui_dir, 'about.ui')
-SHORTCUTS_UI_FILE = os.path.join(ui_dir, 'shortcuts.ui')
-MENUS_UI_FILE = os.path.join(ui_dir, 'menus.ui')
-CSS_FILE = os.path.join(ui_dir, 'gtimelog.css')
+UI_FILE = os.path.join(_base_views, 'gtimelog.ui')
+MENUS_UI_FILE = os.path.join(_base_views, 'menus.ui')
+ABOUT_DIALOG_UI_FILE = os.path.join(_core_data, 'about.ui')
+SHORTCUTS_UI_FILE = os.path.join(_base_views, 'shortcuts.ui')
+CSS_FILE = os.path.join(_base_views, 'gtimelog.css')
+PREFERENCES_UI_FILE = os.path.join(_core_data, 'preferences.ui')
 
 LOCALE_DIR = os.path.join(here, 'locale')
-CONTRIBUTORS_FILE = os.path.join(here, 'CONTRIBUTORS.rst')
+CONTRIBUTORS_FILE = os.path.join(_base_data, 'CONTRIBUTORS.rst')
+ICON_FILE = os.path.join(_base_data, 'gtimelog.png')
+ICON_LARGE_FILE = os.path.join(_base_data, 'gtimelog-large.png')

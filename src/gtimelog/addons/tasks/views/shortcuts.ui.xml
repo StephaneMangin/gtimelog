@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui_extension target="shortcuts.ui">
+  <!-- Tasks addon shortcuts: Task pane management -->
+
+  <!-- Add Task pane group to the Entry section (created by timelog addon) -->
+  <xpath expr=".//object[@id='entry_section']" position="inside">
+    <child>
+      <object class="GtkShortcutsGroup">
+        <property name="visible">True</property>
+        <property name="title" translatable="yes" context="shortcut window">Task pane</property>
+        <child>
+          <object class="GtkShortcutsShortcut">
+            <property name="visible">True</property>
+            <property name="accelerator">F9</property>
+            <property name="title" translatable="yes" context="shortcut window">Toggle task pane</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsShortcut">
+            <property name="visible">True</property>
+            <property name="accelerator">&lt;primary&gt;T</property>
+            <property name="title" translatable="yes" context="shortcut window">Edit task list</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </xpath>
+
+  <xpath expr=".//object[@id='sort_order_group']" position="inside">
+    <child>
+      <object class="GtkShortcutsShortcut">
+        <property name="visible">True</property>
+        <property name="accelerator">&lt;alt&gt;0</property>
+        <property name="title" translatable="yes" context="shortcut window">By task list order</property>
+      </object>
+    </child>
+  </xpath>
+</ui_extension>

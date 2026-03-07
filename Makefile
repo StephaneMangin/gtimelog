@@ -15,10 +15,11 @@ COVERAGE = .tox/coverage/bin/coverage
 #
 
 manpages = gtimelog.1
-po_dir = src/gtimelog/po
-po_files = $(wildcard $(po_dir)/*.po)
 mo_dir = src/gtimelog/locale
-mo_files = $(patsubst $(po_dir)/%.po,$(mo_dir)/%/LC_MESSAGES/gtimelog.mo,$(po_files))
+addons_dir = src/gtimelog/addons
+# Discover languages from addon i18n/ dirs (e.g. en, fr, lt, nb, nl)
+i18n_langs = $(sort $(basename $(notdir $(wildcard $(addons_dir)/*/i18n/*.po))))
+mo_files = $(patsubst %,$(mo_dir)/%/LC_MESSAGES/gtimelog.mo,$(i18n_langs))
 schema_dir = src/gtimelog/data
 schema_files = $(schema_dir)/gschemas.compiled
 runtime_files = $(schema_files) $(mo_files)
@@ -48,29 +49,73 @@ check-appstream-metadata:               ##: validate appstream metadata file
 
 .PHONY: coverage
 coverage:                               ##: measure test coverage
-	tox -e coverage
+	python -m pytest --cov=src/gtimelog --cov-report=term-missing:skip-covered --cov-report=html -q
 
 .PHONY: coverage-diff
 coverage-diff: coverage                 ##: find untested code in this branch
-	$(COVERAGE) xml
+	python -m coverage xml
 	diff-cover coverage.xml
 
-.PHONY: flake8
-flake8:                                 ##: check for style problems
-	tox -e flake8
+.PHONY: lint
+lint:                                   ##: run ruff linter
+	ruff check src/ scripts/ setup.py
 
-.PHONY: isort
-isort:                                  ##: check for badly sorted improts
-	tox -e isort
+.PHONY: format
+format:                                 ##: auto-format code with ruff
+	ruff check --fix src/ scripts/ setup.py
+	ruff format src/ scripts/ setup.py
+
+.PHONY: format-check
+format-check:                           ##: check formatting without changing files
+	ruff format --check src/ scripts/ setup.py
+
+.PHONY: security
+security:                               ##: run security checks (bandit)
+	bandit -c pyproject.toml -r src/ -q
+
+.PHONY: complexity
+complexity:                             ##: show cyclomatic complexity hotspots
+	radon cc src/ -s -a -nc
+
+.PHONY: architecture-check
+architecture-check:                     ##: validate modular addon architecture
+	$(PYTHON) scripts/module_architecture_check.py
+	$(PYTHON) scripts/check_inherit_name_rule.py
+
+.PHONY: inherit-name-check
+inherit-name-check:                     ##: enforce _inherit/_name extension convention
+	$(PYTHON) scripts/check_inherit_name_rule.py
+
+.PHONY: quality
+quality: architecture-check             ##: full quality gate (complexity + coverage + ascii report)
+	python scripts/quality_gate.py
+
+.PHONY: pre-commit
+pre-commit:                             ##: run all pre-commit hooks on all files
+	pre-commit run -a
+
+.PHONY: pre-commit-install
+pre-commit-install:                     ##: install pre-commit git hooks
+	pre-commit install
+	pre-commit install --hook-type pre-push
 
 .PHONY: update-translations
-update-translations:                    ##: extract new translatable strings from source code and ui files
-	git config filter.po.clean 'msgcat - --no-location'
-	cd $(po_dir) && intltool-update -g gtimelog -p
-	for po in $(po_files); do msgmerge -U $$po $(po_dir)/gtimelog.pot; done
+update-translations:                    ##: merge addon .pot files and update all addon .po files
+	@merged_pot=$$(mktemp); \
+	  msgcat --use-first $$(find $(addons_dir)/*/i18n -name '*.pot') -o $$merged_pot; \
+	  for po in $$(find $(addons_dir)/*/i18n -name '*.po'); do \
+	    echo "Updating $$po"; \
+	    msgmerge -U $$po $$merged_pot; \
+	  done; \
+	  rm -f $$merged_pot
 
 .PHONY: mo-files
-mo-files: $(mo_files)
+mo-files: $(mo_files)                   ##: merge addon .po and compile to .mo
+
+# For each language, merge all addon i18n/<lang>.po into a single .mo
+$(mo_dir)/%/LC_MESSAGES/gtimelog.mo: $(wildcard $(addons_dir)/*/i18n/%.po)
+	@mkdir -p $(@D)
+	@msgcat --use-first $(wildcard $(addons_dir)/*/i18n/$*.po) | msgfmt -o $@ -
 
 .PHONY: flatpak
 flatpak:                                ##: build a flatpak package
@@ -90,9 +135,6 @@ flatpak-install:                        ##: build and install a flatpak package
 	# to run it do
 	# flatpak run org.gtimelog.GTimeLog
 
-$(mo_dir)/%/LC_MESSAGES/gtimelog.mo: $(po_dir)/%.po
-	@mkdir -p $(@D)
-	msgfmt -o $@ $<
 
 $(schema_files): $(schema_dir)/org.gtimelog.gschema.xml
 	glib-compile-schemas $(schema_dir)

@@ -1,0 +1,242 @@
+<ui_extension target="preferences.ui">
+  <!-- Add hours/office-hours adjustments -->
+  <xpath expr=".//object[@id='rounding_time_adjustment']" position="before">
+    <object class="GtkAdjustment" id="hours_adjustment">
+      <property name="upper">24</property>
+      <property name="step_increment">0.5</property>
+      <property name="page_increment">1</property>
+    </object>
+    <object class="GtkAdjustment" id="office_hours_adjustment">
+      <property name="upper">24</property>
+      <property name="step_increment">0.5</property>
+      <property name="page_increment">1</property>
+    </object>
+  </xpath>
+
+  <!-- Add the "Goals" section to the entry page -->
+  <xpath expr=".//object[@id='entry_page']" position="inside">
+    <child>
+      <object class="GtkBox" id="goals_box">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">6</property>
+        <child>
+          <object class="GtkLabel" id="goals_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Goals</property>
+            <property name="xalign">0</property>
+            <attributes>
+              <attribute name="weight" value="bold"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkGrid" id="goals_grid">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="margin_start">12</property>
+            <property name="row_spacing">6</property>
+            <property name="column_spacing">12</property>
+            <child>
+              <object class="GtkLabel" id="hours_label">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Work hours</property>
+                <property name="xalign">1</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="office_hours_label">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Office hours</property>
+                <property name="ellipsize">end</property>
+                <property name="xalign">1</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="week_days_label">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Work days</property>
+                <property name="ellipsize">end</property>
+                <property name="xalign">1</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="hours_entry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="digits">1</property>
+                <property name="width_chars">5</property>
+                <property name="max_width_chars">5</property>
+                <property name="text">8</property>
+                <property name="xalign">1</property>
+                <property name="adjustment">hours_adjustment</property>
+                <property name="activates_default">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="office_hours_entry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="digits">1</property>
+                <property name="width_chars">5</property>
+                <property name="max_width_chars">5</property>
+                <property name="text">9</property>
+                <property name="xalign">1</property>
+                <property name="adjustment">office_hours_adjustment</property>
+                <property name="activates_default">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox" id="week_days_box">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="orientation">horizontal</property>
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkCheckButton" id="monday_check">
+                    <property name="label" translatable="yes">Mon</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="active">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="tuesday_check">
+                    <property name="label" translatable="yes">Tue</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="active">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="wednesday_check">
+                    <property name="label" translatable="yes">Wed</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="active">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="thursday_check">
+                    <property name="label" translatable="yes">Thu</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="active">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="friday_check">
+                    <property name="label" translatable="yes">Fri</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="active">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="saturday_check">
+                    <property name="label" translatable="yes">Sat</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="active">False</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="sunday_check">
+                    <property name="label" translatable="yes">Sun</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="active">False</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="after_hours_label">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">per day</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="after_office_hours_label">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">(including lunch break)</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+  </xpath>
+
+  <!-- Extend the size group with office_hours labels -->
+  <xpath expr=".//object[@id='entry_labels']" position="inside">
+    <widgets>
+      <widget name="hours_label"/>
+      <widget name="office_hours_label"/>
+      <widget name="week_days_label"/>
+    </widgets>
+  </xpath>
+</ui_extension>

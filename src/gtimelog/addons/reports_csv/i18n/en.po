@@ -1,0 +1,25 @@
+# GTimeLog translation to English
+# Copyright (C) 2015 Marius Gedminas <marius@gedmin.as>
+# This file is distributed under the same license as the GTimeLog package.
+# Marius Gedminas <marius@gedmin.as>, 2015.
+#
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gtimelog 0.10.dev0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-30 14:15+0200\n"
+"PO-Revision-Date: 2015-09-04 10:53+0300\n"
+"Last-Translator: Marius Gedminas <marius@gedmin.as>\n"
+"Language-Team: <marius@gedmin.as>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Close"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""

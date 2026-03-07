@@ -2,10 +2,8 @@
 import ast
 import os
 import re
-import sys
 
 from setuptools import find_packages, setup
-
 
 here = os.path.dirname(__file__)
 
@@ -28,26 +26,25 @@ version = metadata['__version__']
 
 changes = read('CHANGES.rst').split('\n\n\n')
 changes_in_latest_versions = '\n\n\n'.join(changes[:3])
-older_changes = '''
+older_changes = """
 Older versions
 ~~~~~~~~~~~~~~
 
 See the `full changelog`_.
 
 .. _full changelog: https://github.com/gtimelog/gtimelog/blob/master/CHANGES.rst
-'''
+"""
 
 short_description = 'A Gtk+ time tracking application'
-long_description = ''.join([
-    read('README.rst'),
-    '\n\n',
-    changes_in_latest_versions,
-    '\n\n',
-    older_changes,
-])
-
-if sys.version_info < (3, 7, 0):
-    sys.exit("Python 3.7 is the minimum required version")
+long_description = ''.join(
+    [
+        read('README.rst'),
+        '\n\n',
+        changes_in_latest_versions,
+        '\n\n',
+        older_changes,
+    ]
+)
 
 setup(
     name='gtimelog',
@@ -74,7 +71,6 @@ setup(
         'Topic :: Office/Business',
     ],
     python_requires='>= 3.10',
-
     packages=find_packages('src'),
     package_dir={'': 'src'},
     include_package_data=True,
@@ -87,7 +83,7 @@ setup(
     zip_safe=False,
     entry_points="""
     [gui_scripts]
-    gtimelog = gtimelog.main:main
+    gtimelog = gtimelog:main
     """,
     install_requires=['PyGObject'],
 )

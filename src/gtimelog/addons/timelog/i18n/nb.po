@@ -1,0 +1,85 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# John Erling Blad <jeblad@gmail.com>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: unnamed project\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-30 14:15+0200\n"
+"PO-Revision-Date: 2022-10-07 11:57+0200\n"
+"Last-Translator: John Erling Blad <jeblad@gmail.com>\n"
+"Language-Team:  <gnome-no@gnome.org>\n"
+"Language: nb\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Gtranslator 42.0\n"
+"Plural-Forms: nplurals=2; plural=(n!=1)\n"
+
+msgid "%H:%M"
+msgstr "%H:%M"
+
+msgid "{0:%A, %Y-%m-%d}\n"
+msgstr "{0:%A, %Y-%m-%d}\n"
+
+#, python-brace-format
+msgid "Total for {0}: {1} ({2} per day)"
+msgstr "Totalt {0}: {1} ({2} per dag)"
+
+#, python-brace-format
+msgid "Total for {0}: {1} ({2} this week, {3} per day)"
+msgstr "Totalt {0}: {1} ({2} denne uka, {3} per dag)"
+
+msgid "({0:%H:%M}-{1:%H:%M})"
+msgstr "({0:%H:%M}-{1:%H:%M})"
+
+#, python-brace-format
+msgid "Total work done: {0} ({1} this week, {2} per day)"
+msgstr "Totalt utført arbeid: {0} ({1} denne uka, {2} per dag)"
+
+#, python-brace-format
+msgid "Total work done: {0} ({1} this week)"
+msgstr "Totalt utført arbeid: {0} ({1} denne uka)"
+
+#, python-brace-format
+msgid "Total work done this week: {0} ({1} per day)"
+msgstr "Totalt utført arbeid denne uka: {0} ({1} per dag)"
+
+#, python-brace-format
+msgid "Total work done this week: {0}"
+msgstr "Totalt utført arbeid denne uka: {0}"
+
+#, python-brace-format
+msgid "Total work done this month: {0} ({1} per day)"
+msgstr "Totalt utført arbeid denne måneden: {0} ({1} per dag)"
+
+#, python-brace-format
+msgid "Total work done this month: {0}"
+msgstr "Totalt utført arbeid denne måneden: {0}"
+
+#, python-brace-format
+msgid "Total slacking: {0} ({1} this week, {2} per day)"
+msgstr "Totalt slacking: {0} ({1} denne uka, {2} per dag)"
+
+#, python-brace-format
+msgid "Total slacking: {0} ({1} this week)"
+msgstr "Totalt slacking: {0} ({1} denne uka)"
+
+#, python-brace-format
+msgid "Total slacking this week: {0} ({1} per day)"
+msgstr "Total lediggang denne uka: {0} ({1} per dag)"
+
+#, python-brace-format
+msgid "Total slacking this week: {0}"
+msgstr "Total lediggang denne uka: {0}"
+
+#, python-brace-format
+msgid "Total slacking this month: {0} ({1} per day)"
+msgstr "Total lediggang denne måneden: {0} ({1} per dag)"
+
+#, python-brace-format
+msgid "Total slacking this month: {0}"
+msgstr "Total lediggang denne måneden: {0}"

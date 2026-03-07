@@ -1,0 +1,30 @@
+<ui_extension target="preferences.ui">
+  <xpath expr=".//object[@id='reports_grid']" position="inside">
+    <child>
+      <object class="GtkCheckButton" id="show_ical_export_button_checkbox">
+        <property name="label" translatable="yes">Show iCalendar export button</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">False</property>
+        <property name="draw_indicator">True</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="top_attach">5</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkCheckButton" id="attach_ical_checkbox">
+        <property name="label" translatable="yes">Attach iCalendar to email reports</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">False</property>
+        <property name="draw_indicator">True</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="top_attach">6</property>
+      </packing>
+    </child>
+  </xpath>
+</ui_extension>

@@ -1,0 +1,12 @@
+# Requirements for gtimelog scripts
+# Scripts: export_to_odoo.py, planio.py
+
+# For planio.py - Redmine API client
+python-redmine>=2.4.0
+
+# For planio.py - Excel export
+openpyxl>=3.0.0
+
+# For export_to_odoo.py
+# Note: xmlrpc.client is part of Python standard library (no installation needed)
+# Other dependencies used: os, re, argparse, datetime (all standard library)

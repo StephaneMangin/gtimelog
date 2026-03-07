@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui_extension target="shortcuts.ui">
+  <xpath expr=".//object[@id='entry_section']" position="inside">
+    <child>
+      <object class="GtkShortcutsGroup">
+        <property name="visible">True</property>
+        <property name="title" translatable="yes" context="shortcut window">Task synchronization</property>
+        <child>
+          <object class="GtkShortcutsShortcut">
+            <property name="visible">True</property>
+            <property name="accelerator">&lt;primary&gt;&lt;shift&gt;T</property>
+            <property name="title" translatable="yes" context="shortcut window">Sync tasks now</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </xpath>
+</ui_extension>

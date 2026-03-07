@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui_extension target="shortcuts.ui">
+  <!-- Reports addon shortcuts: Report generation and navigation -->
+
+  <!-- Add Reports section after Entry section (created by timelog addon) -->
+  <xpath expr=".//object[@id='entry_section']" position="after">
+    <object class="GtkShortcutsSection" id="report_section">
+      <property name="visible">True</property>
+      <property name="section-name">report</property>
+      <property name="title" translatable="yes" context="shortcuts window">Reports</property>
+      <child>
+        <object class="GtkShortcutsGroup">
+          <property name="visible">True</property>
+          <property name="title" translatable="yes" context="shortcut window">Time range</property>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;alt&gt;4</property>
+              <property name="title" translatable="yes" context="shortcut window">Day view</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;alt&gt;5</property>
+              <property name="title" translatable="yes" context="shortcut window">Week view</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;alt&gt;6</property>
+              <property name="title" translatable="yes" context="shortcut window">Month view</property>
+            </object>
+          </child>
+        </object>
+      </child>
+      <child>
+        <object class="GtkShortcutsGroup">
+          <property name="visible">True</property>
+          <property name="title" translatable="yes" context="shortcut window">Time navigation</property>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;alt&gt;Left</property>
+              <property name="title" translatable="yes" context="shortcut window">Go back in time</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;alt&gt;Right</property>
+              <property name="title" translatable="yes" context="shortcut window">Go forward in time</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;alt&gt;Home</property>
+              <property name="title" translatable="yes" context="shortcut window">Go back to today</property>
+            </object>
+          </child>
+        </object>
+      </child>
+      <child>
+        <object class="GtkShortcutsGroup">
+          <property name="visible">True</property>
+          <property name="title" translatable="yes" context="shortcut window">Reporting</property>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;primary&gt;D</property>
+              <property name="title" translatable="yes" context="shortcut window">Switch to report mode</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;primary&gt;Return</property>
+              <property name="title" translatable="yes" context="shortcut window">Send report via email</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">Escape</property>
+              <property name="title" translatable="yes" context="shortcut window">Return to task entry mode</property>
+            </object>
+          </child>
+        </object>
+      </child>
+    </object>
+  </xpath>
+</ui_extension>

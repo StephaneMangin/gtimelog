@@ -30,4 +30,3 @@
 
   - [ ] Internal reporting
   - [ ] Preferences dialog
-

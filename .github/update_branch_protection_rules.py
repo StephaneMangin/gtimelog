@@ -15,9 +15,8 @@ import sys
 
 import yaml
 
-
-REPO = "gtimelog/gtimelog"
-BRANCH = "master"
+REPO = 'gtimelog/gtimelog'
+BRANCH = 'master'
 
 
 here = pathlib.Path(__file__).parent
@@ -62,30 +61,23 @@ def pretty_print_command(command: list[str], width: int | None = None) -> None:
         lines.append(' '.join(cur_line))
 
     # align the \ on the right
-    longest_width = max(
-        len(line) for line in lines if len(line) <= terminal_width
-    )
-    lines[:-1] = [
-        line.rstrip('\\').ljust(longest_width) + '\\'
-        for line in lines[:-1]
-    ]
+    longest_width = max(len(line) for line in lines if len(line) <= terminal_width)
+    lines[:-1] = [line.rstrip('\\').ljust(longest_width) + '\\' for line in lines[:-1]]
 
     print(*lines, sep='\n')
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Update GitHub branch protection rules"
-    )
+    parser = argparse.ArgumentParser(description='Update GitHub branch protection rules')
     parser.add_argument(
-        "-n",
-        "--dry-run",
-        action="store_true",
-        help="Print the gh api command without executing it",
+        '-n',
+        '--dry-run',
+        action='store_true',
+        help='Print the gh api command without executing it',
     )
     args = parser.parse_args()
 
-    with open(here / "workflows" / "build.yml") as fp:
+    with open(here / 'workflows' / 'build.yml') as fp:
         workflow = yaml.safe_load(fp)
         test_name_template = workflow['jobs']['build']['name']
         lint_name_template = workflow['jobs']['lint']['name']
@@ -97,9 +89,7 @@ def main() -> None:
     pythons = test_matrix['python-version']
     oses = test_matrix['os']
     test_names = [
-        test_name_template
-        .replace('${{ matrix.python-version }}', python_version)
-        .replace('${{ matrix.os }}', os)
+        test_name_template.replace('${{ matrix.python-version }}', python_version).replace('${{ matrix.os }}', os)
         for python_version in pythons
         for os in oses
     ]
@@ -112,16 +102,16 @@ def main() -> None:
     command = [
         'gh',
         'api',
-        '-X', 'PUT',
-        "-H", "Accept: application/vnd.github+json",
-        "-H", "X-GitHub-Api-Version: 2022-11-28",
-        (
-            f"/repos/{REPO}/branches/{BRANCH}/protection/"
-            "required_status_checks/contexts"
-        ),
+        '-X',
+        'PUT',
+        '-H',
+        'Accept: application/vnd.github+json',
+        '-H',
+        'X-GitHub-Api-Version: 2022-11-28',
+        (f'/repos/{REPO}/branches/{BRANCH}/protection/required_status_checks/contexts'),
     ]
     for name in check_names:
-        command += ["-f", f"contexts[]={name}"]
+        command += ['-f', f'contexts[]={name}']
 
     # Using a shorter width because I don't want multiple -f contexts[]=one -f
     # contexts[]=two args to be squished into each line near the end
@@ -131,5 +121,5 @@ def main() -> None:
         sys.exit(rc)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

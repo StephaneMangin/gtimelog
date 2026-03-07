@@ -1,0 +1,83 @@
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# SPDX-FileCopyrightText: 2023 Heimen Stoffels <vistausss@fastmail.com>
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-30 14:15+0200\n"
+"PO-Revision-Date: 2023-09-04 20:10+0200\n"
+"Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
+"Language-Team: Dutch\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.3.2\n"
+
+msgid "%H:%M"
+msgstr "%H:%M"
+
+msgid "{0:%A, %Y-%m-%d}\n"
+msgstr "{0:%A, %Y-%m-%d}\n"
+
+#, python-brace-format
+msgid "Total for {0}: {1} ({2} per day)"
+msgstr "Totaal van {0}: {1} ({2} per dag)"
+
+#, python-brace-format
+msgid "Total for {0}: {1} ({2} this week, {3} per day)"
+msgstr "Totaal van {0}: {1} ({2} deze week; {3} per dag)"
+
+msgid "({0:%H:%M}-{1:%H:%M})"
+msgstr "({0:%H:%M}-{1:%H:%M})"
+
+#, python-brace-format
+msgid "Total work done: {0} ({1} this week, {2} per day)"
+msgstr "Totale werktĳd: {0} ({1} deze week; {2} per dag)"
+
+#, python-brace-format
+msgid "Total work done: {0} ({1} this week)"
+msgstr "Totale werktĳd: {0} ({1} deze week)"
+
+#, python-brace-format
+msgid "Total work done this week: {0} ({1} per day)"
+msgstr "Totale werktĳd deze week: {0} ({1} per dag)"
+
+#, python-brace-format
+msgid "Total work done this week: {0}"
+msgstr "Totale werktĳd deze week: {0}"
+
+#, python-brace-format
+msgid "Total work done this month: {0} ({1} per day)"
+msgstr "Totale werktĳd deze maand: {0} ({1} per dag)"
+
+#, python-brace-format
+msgid "Total work done this month: {0}"
+msgstr "Totale werktĳd deze maand: {0}"
+
+#, python-brace-format
+msgid "Total slacking: {0} ({1} this week, {2} per day)"
+msgstr "Totale lanterfanttĳd: {0} ({1} deze week; {2} per dag)"
+
+#, python-brace-format
+msgid "Total slacking: {0} ({1} this week)"
+msgstr "Totale lanterfanttĳd: {0} ({1} deze week)"
+
+#, python-brace-format
+msgid "Total slacking this week: {0} ({1} per day)"
+msgstr "Totale lanterfanttĳd deze week: {0} ({1} per dag)"
+
+#, python-brace-format
+msgid "Total slacking this week: {0}"
+msgstr "Totale lanterfanttĳd deze week: {0}"
+
+#, python-brace-format
+msgid "Total slacking this month: {0} ({1} per day)"
+msgstr "Totale lanterfanttĳd deze maand: {0} ({1} per dag)"
+
+#, python-brace-format
+msgid "Total slacking this month: {0}"
+msgstr "Totale lanterfanttĳd deze maand: {0}"

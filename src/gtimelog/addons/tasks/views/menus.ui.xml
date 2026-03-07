@@ -1,0 +1,21 @@
+<ui_extension target="menus.ui">
+  <xpath expr=".//menu[@id='window_menu']/section/item[attribute='win.edit-last-entry']" position="after">
+    <item>
+      <attribute name="label" translatable="yes">Edit tasks</attribute>
+      <attribute name="action">app.edit-tasks</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Refresh tasks</attribute>
+      <attribute name="action">app.refresh-tasks</attribute>
+      <attribute name="hidden-when">action-disabled</attribute>
+    </item>
+  </xpath>
+
+  <xpath expr=".//menu[@id='view_menu']/section[3]/item[attribute='win.log-order'][attribute='duration']" position="after">
+    <item>
+      <attribute name="label" translatable="yes">By task list order</attribute>
+      <attribute name="action">win.log-order</attribute>
+      <attribute name="target">task-list</attribute>
+    </item>
+  </xpath>
+</ui_extension>

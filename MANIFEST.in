@@ -14,7 +14,7 @@ include benchmark.py
 recursive-include src *.png *.ui *.xml *.css *.rst gschemas.compiled
 recursive-include docs *.png *.rst *.css Makefile
 recursive-include scripts *.py *.rst
-recursive-include src/gtimelog/po *.po *.pot *.in
+recursive-include src/gtimelog/addons *.po *.pot
 recursive-include flatpak *.yaml
 
 prune docs/build

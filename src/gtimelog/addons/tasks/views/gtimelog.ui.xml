@@ -1,0 +1,110 @@
+<ui_extension target="gtimelog.ui">
+  <!-- Add view-dual-symbolic image for task pane toggle button -->
+  <xpath expr=".//object[@id='main_window']" position="before">
+    <object class="GtkImage" id="image5">
+      <property name="visible">True</property>
+      <property name="can_focus">False</property>
+      <property name="icon_name">view-dual-symbolic</property>
+    </object>
+  </xpath>
+
+  <!-- Add task pane as second child of paned (becomes pack2) -->
+  <xpath expr=".//object[@id='paned']" position="inside">
+    <child>
+      <object class="GtkBox" id="task_pane">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="width-request">50</property>
+        <child>
+          <object class="GtkScrolledWindow" id="scrolledwindow2">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <child>
+              <object class="GtkTreeView" id="task_list">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <child internal-child="selection">
+                  <object class="GtkTreeSelection" id="treeview-selection"/>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkInfoBar" id="tasks_infobar">
+            <property name="app_paintable">True</property>
+            <property name="can_focus">False</property>
+            <property name="message_type">info</property>
+            <property name="show_close_button">True</property>
+            <child internal-child="action_area">
+              <object class="GtkButtonBox" id="infobar-action_area2">
+                <property name="can_focus">False</property>
+                <property name="spacing">6</property>
+                <property name="layout_style">end</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child internal-child="content_area">
+              <object class="GtkBox" id="infobar-content_area2">
+                <property name="can_focus">False</property>
+                <property name="spacing">16</property>
+                <child>
+                  <object class="GtkLabel" id="tasks_infobar_label">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label">Downloading tasks.</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="resize">False</property>
+        <property name="shrink">False</property>
+      </packing>
+    </child>
+  </xpath>
+
+  <!-- Add task pane toggle button in headerbar (before menu_button) -->
+  <xpath expr=".//object[@id='menu_button']/.." position="before">
+    <child>
+      <object class="GtkToggleButton" id="task_pane_button">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="action_name">win.show-task-pane</property>
+        <property name="image">image5</property>
+      </object>
+      <packing>
+        <property name="pack_type">end</property>
+        <property name="position">2</property>
+      </packing>
+    </child>
+  </xpath>
+</ui_extension>

@@ -1,0 +1,41 @@
+# GTimeLog translation to French
+# Copyright (C) 2020 Stéphane Mangin <stephane.mangin@freesbee.fr>
+# This file is distributed under the same license as the GTimeLog package.
+# Marius Gedminas <marius@gedmin.as>, 2020.
+#
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gtimelog 0.12.0.dev0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-30 14:15+0200\n"
+"PO-Revision-Date: 2020-08-08 15:52+0200\n"
+"Last-Translator: Stéphane Mangin <stephane.mangin@freesbee.fr>\n"
+"Language-Team: <stephane.mangin@freesbee.fr>\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"(n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid ""
+"Time left at work: {0} (should've finished at {1:%H:%M}, overtime of {2} "
+"until now)"
+msgstr ""
+"Temps restant au travail: {0} (fin estimée {1:%H:%M}, dépassement horaire de "
+"{2})"
+
+msgid "Time left at work: {0} (till {1:%H:%M})"
+msgstr "Temps restant au travail: {0} (jusqu'à {1:%H:%M})"
+
+msgid "Estimated week overtime: {0}"
+msgstr "Heures supp. hebdomadaire estimées : {0}"
+
+#, python-brace-format
+msgid "At office today: {0} ({1} overtime)"
+msgstr "Au bureau aujourd'hui: {0} ({1} de dépassement)"
+
+#, python-brace-format
+msgid "At office today: {0} ({1} left)"
+msgstr "Au bureau aujourd'hui: {0} ({1} restante)"

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui_extension target="shortcuts.ui">
+  <!-- Timelog addon shortcuts: Task entry, detail levels, time navigation -->
+
+  <!-- Add Entry section after General section -->
+  <xpath expr=".//object[@id='general_section']" position="after">
+    <object class="GtkShortcutsSection" id="entry_section">
+      <property name="visible">True</property>
+      <property name="section-name">entry</property>
+      <property name="title" translatable="yes" context="shortcuts window">Entry</property>
+      <child>
+        <object class="GtkShortcutsGroup">
+          <property name="visible">True</property>
+          <property name="title" translatable="yes" context="shortcut window">Task Entry</property>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;primary&gt;L</property>
+              <property name="title" translatable="yes" context="shortcut window">Focus the task entry</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;primary&gt;&lt;shift&gt;BackSpace</property>
+              <property name="title" translatable="yes" context="shortcut window">Edit last task entry</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;primary&gt;F</property>
+              <property name="title" translatable="yes" context="shortcut window">Toggle search bar</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;primary&gt;E</property>
+              <property name="title" translatable="yes" context="shortcut window">Edit task log</property>
+            </object>
+          </child>
+        </object>
+      </child>
+      <child>
+        <object class="GtkShortcutsGroup">
+          <property name="visible">True</property>
+          <property name="title" translatable="yes" context="shortcut window">Detail level</property>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;alt&gt;1</property>
+              <property name="title" translatable="yes" context="shortcut window">Full chronological list</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;alt&gt;2</property>
+              <property name="title" translatable="yes" context="shortcut window">Group by description</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;alt&gt;3</property>
+              <property name="title" translatable="yes" context="shortcut window">Group by category</property>
+            </object>
+          </child>
+        </object>
+      </child>
+      <child>
+        <object class="GtkShortcutsGroup">
+          <property name="visible">True</property>
+          <property name="title" translatable="yes" context="shortcut window">Time range</property>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;alt&gt;4</property>
+              <property name="title" translatable="yes" context="shortcut window">Day view</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;alt&gt;5</property>
+              <property name="title" translatable="yes" context="shortcut window">Week view</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;alt&gt;6</property>
+              <property name="title" translatable="yes" context="shortcut window">Month view</property>
+            </object>
+          </child>
+        </object>
+      </child>
+      <child>
+        <object class="GtkShortcutsGroup" id="sort_order_group">
+          <property name="visible">True</property>
+          <property name="title" translatable="yes" context="shortcut window">Sort order</property>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;alt&gt;7</property>
+              <property name="title" translatable="yes" context="shortcut window">By start time</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;alt&gt;8</property>
+              <property name="title" translatable="yes" context="shortcut window">By name</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;alt&gt;9</property>
+              <property name="title" translatable="yes" context="shortcut window">By duration</property>
+            </object>
+          </child>
+        </object>
+      </child>
+      <child>
+        <object class="GtkShortcutsGroup">
+          <property name="visible">True</property>
+          <property name="title" translatable="yes" context="shortcut window">Time navigation</property>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;alt&gt;Left</property>
+              <property name="title" translatable="yes" context="shortcut window">Go back in time</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;alt&gt;Right</property>
+              <property name="title" translatable="yes" context="shortcut window">Go forward in time</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkShortcutsShortcut">
+              <property name="visible">True</property>
+              <property name="accelerator">&lt;alt&gt;Home</property>
+              <property name="title" translatable="yes" context="shortcut window">Go back to today</property>
+            </object>
+          </child>
+        </object>
+      </child>
+    </object>
+  </xpath>
+</ui_extension>

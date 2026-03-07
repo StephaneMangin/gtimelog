@@ -6,13 +6,12 @@ import sys
 import time
 from operator import itemgetter
 
-
 pkgdir = os.path.join(os.path.dirname(__file__), 'src')
 sys.path.insert(0, pkgdir)
 
-from gtimelog.settings import Settings
-from gtimelog.timelog import TimeLog, parse_datetime
-
+from gtimelog.addons.base.models.settings import Settings
+from gtimelog.addons.base.models.time_utils import parse_datetime
+from gtimelog.addons.timelog.models.timelog import TimeLog
 
 fns = []
 
@@ -28,12 +27,12 @@ def unmark(fn):
 
 def benchmark(fn, correct_output):
     gc.collect()
-    print("{}:".format(fn.__name__), end="")
-    m = float("inf")
+    print(f'{fn.__name__}:', end='')
+    m = float('inf')
     n = 0
     output = fn()
     if output != correct_output:
-        print(" [NB incorrect output]")
+        print(' [NB incorrect output]')
     else:
         print()
     t00 = time.time()
@@ -43,13 +42,13 @@ def benchmark(fn, correct_output):
         t1 = time.time()
         d = t1 - t0
         m = min(m, d)
-        print("\r{:.3f}s".format(d), end="")
+        print(f'\r{d:.3f}s', end='')
         sys.stdout.flush()
         n += 1
         if n > 100:
             break
     tot = time.time() - t00
-    print("\rmin {:.3f}s avg {:.3f}s (n={})\n".format(m, tot / n, n))
+    print(f'\rmin {m:.3f}s avg {tot / n:.3f}s (n={n})\n')
 
 
 @unmark
@@ -211,7 +210,7 @@ def parse_and_sort_unicode_piecemeal():
 def parse_and_sort_python3():
     items = []
     filename = Settings().get_timelog_file()
-    for line in open(filename, 'r', encoding='UTF-8'):
+    for line in open(filename, encoding='UTF-8'):
         time, sep, entry = line.partition(': ')
         if not sep:
             continue
@@ -227,7 +226,7 @@ def parse_and_sort_python3():
 
 @mark
 def full():
-    return TimeLog(Settings().get_timelog_file(), Settings().virtual_midnight).items
+    return TimeLog(Settings().get_timelog_file(), Settings().virtual_midnight, Settings().rounding_time).items
 
 
 def main():
