@@ -18,6 +18,7 @@ Documentation
 
 - `Overview <docs.html>`__
 - `File formats <formats.html>`__
+- `Architecture overview <architecture_overview.html>`__
 
 
 Download
